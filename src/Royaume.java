@@ -15,7 +15,7 @@ public class Royaume {
 		int Xrot = 0;
 		int Yrot = 0;
 		
-		// captation des données
+		// captation des donnĂ©es
 		
 		if (checkPlacerDomino(domino, Xref, Yref, Xrot, Yrot)) {
 			listeCases.add(domino.getCaseRef());

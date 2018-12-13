@@ -1,6 +1,3 @@
-import java.awt.List;
-import java.util.ArrayList;
-
 public class Domino {
 	private Case caseRef;
 	private Case caseRot;
