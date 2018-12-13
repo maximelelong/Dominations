@@ -3,7 +3,9 @@ public class Case {
 	
 	private TypeTerrain typeTerrain;
 	private int nbCouronnes;
+	@SuppressWarnings("null")
 	private int X = (Integer) null;
+	@SuppressWarnings("null")
 	private int Y = (Integer) null;
 	
 	public Case(TypeTerrain type, int nombrebCouronnes) {
