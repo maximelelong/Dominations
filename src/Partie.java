@@ -2,8 +2,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class Partie {
+
+public class Partie extends Application {
 	static Scanner scan = new Scanner(System.in); 
 	ArrayList<Color> couleursRestantes=new ArrayList<>();
 	ArrayList<Joueur> listeJoueurs=new ArrayList<>();
@@ -20,10 +23,17 @@ public class Partie {
 		for(int i=0;i<nbJoueur;i++ ) {
 			ajouterJoueur(i);
 			
-		}
+		}		
+	}
 	
+	@Override
+	public void start(Stage arg0) throws Exception {
+		// TODO Auto-generated method stub
 		
 	}
+	
+	
+	
 	private void ajouterJoueur(int i){
 		System.out.println("entre le nom du joueur"+ (i+1)+" la con de toi");
 		String nomJoueur = scan.nextLine();

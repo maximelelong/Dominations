@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-
 public class Royaume {
-	ArrayList<Case> listeCases = new ArrayList<>();
+	Case[][] listeCases = new Case[9][9];
 	public Royaume() {
 		
 	}
@@ -18,8 +16,8 @@ public class Royaume {
 		// captation des donnĂ©es
 		
 		if (checkPlacerDomino(domino, Xref, Yref, Xrot, Yrot)) {
-			listeCases.add(domino.getCaseRef());
-			listeCases.add(domino.getCaseRot());
+			listeCases[Xref][Yref] = domino.getCaseRef();
+			listeCases[Xrot][Yrot] = domino.getCaseRot();
 			return true;
 		} else
 			return false;
