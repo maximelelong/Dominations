@@ -35,7 +35,7 @@ public class Partie extends Application {
 	
 	
 	private void ajouterJoueur(int i){
-		System.out.println("entre le nom du joueur"+ (i+1)+" la con de toi");
+		System.out.println("Entre le nom du joueur "+ (i+1));
 		String nomJoueur = scan.nextLine();
 		listeJoueurs.add(new Joueur(nomJoueur, couleursRestantes.get(0)));
 		// on enleve la couleur de la liste pour que chaque couleur soit individuelle.
