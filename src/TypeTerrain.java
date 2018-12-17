@@ -5,5 +5,7 @@ public enum TypeTerrain {
 	MER,
 	PRAIRIE,
 	MINE,
-	MONTAGNE;
+	MONTAGNE,
+	CHATEAU;
+	
 }

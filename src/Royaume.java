@@ -1,5 +1,7 @@
 public class Royaume {
 	Case[][] listeCases = new Case[9][9];
+	
+	
 	public Royaume() {
 		
 	}
@@ -61,5 +63,32 @@ public class Royaume {
 			}
 		}
 		return false;
+	}
+	
+	//pas fou actuellement pcq il faut tester avant de placer le domino qui dépassera les limites
+	public boolean isFull() {
+		int xMin =  9;
+		int xMax = 0;
+		int yMin = 9;
+		int yMax = 0;
+		for(int x = 0; x < 9; x++) {
+			for(int y = 0; y < 9; y++) {
+				if (listeCases[x][y] != null) {
+					if (x>xMax)
+						xMax = x;
+					if(x<xMin)
+						xMin = x;
+					if(y>yMax)
+						yMax = y;
+					if (y<yMin)
+						yMin = y;
+				}
+			}
+		}
+		if (xMax-xMin > 5 || yMax-yMin >5) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

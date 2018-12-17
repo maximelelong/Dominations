@@ -1,12 +1,11 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Random;
 import java.util.Scanner;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
 
-
-public class Partie extends Application {
+public class Partie {
 	static Scanner scan = new Scanner(System.in); 
 	ArrayList<Color> couleursRestantes=new ArrayList<>();
 	ArrayList<Joueur> listeJoueurs=new ArrayList<>();
@@ -14,22 +13,16 @@ public class Partie extends Application {
 	ArrayList<Domino> dominosPioche =new ArrayList<>();
 	int nbJoueur;
 	
-	
+	Random rand = new Random();
 
 	public Partie(int nbJoueur) {
-		// on prend une liste avec les couleures disponibles a attribuer 
+		// on prend une liste avec les couleurs disponibles à attribuer 
 		couleursRestantes.addAll(Arrays.asList(Color.values()));
 		this.nbJoueur=nbJoueur;
 		for(int i=0;i<nbJoueur;i++ ) {
 			ajouterJoueur(i);
 			
 		}		
-	}
-	
-	@Override
-	public void start(Stage arg0) throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	
@@ -39,10 +32,19 @@ public class Partie extends Application {
 		String nomJoueur = scan.nextLine();
 		listeJoueurs.add(new Joueur(nomJoueur, couleursRestantes.get(0)));
 		// on enleve la couleur de la liste pour que chaque couleur soit individuelle.
-		couleursRestantes.remove(0);
+		couleursRestantes.remove(0);	
+	}
+	
+	public void tirerNouveauxDominos() {
+		for (int i = 0; i < nbJoueur; i++) {
+			int randomIndex = rand.nextInt(dominosPioche.size());
+			Domino domino = dominosPioche.get(randomIndex);
+			dominosPioche.remove(domino);
+			dominoAJouer.add(domino);
+		}
 		
-		
-		
+		//Permet d'ordonner les dominos selon leur nombre
+		dominoAJouer.sort(Comparator.comparing(Domino::getNumero));
 		
 	}
 
