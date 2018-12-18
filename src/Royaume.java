@@ -28,41 +28,59 @@ public class Royaume {
 	}
 
 	public boolean canPlace(Domino domino, int Xref, int Yref, int Xrot, int Yrot) {
-			
-		//On vérifie que l'emplacement ciblé n'est pas déja occupé
-		boolean emplacementVide = listeCases[Xref][Yref] == null || listeCases[Xrot][Yrot] == null;
-		if (emplacementVide) {
-			return false;
+		//On vérifie que les coordonnées voulues sont dans la grille
+		if(Xref < 0 || Xref > 9 ||
+			Yref < 0 || Yref > 9||
+			Xrot < 0 || Xrot > 9 ||
+			Yrot < 0 || Yrot > 9){
+						return false;
 		}
 		
-		int[][] coordCible = new int[][] {{Xref,Yref},{Xrot,Yrot}};
-		Case[]  casesDominoAPlacer = new Case[] {domino.getCaseRef(),domino.getCaseRot()};
+		//On vérifie que l'emplacement ciblé n'est pas déja occupé
+		boolean emplacementVide = listeCases[Xref][Yref] == null || listeCases[Xrot][Yrot] == null;
+		if (emplacementVide)
+			return false;
 		
-		for (int i = 0; i<coordCible.length; i++){
-			int[] coord = coordCible[i];
-					
-			for(int j : new int[] {1,-1}) {
-				for(int k : new int[] {1,-1}) {
-					
-					int[] coordAdjacent = new int[] {coord[0]+j,coord[1]+k};
-					Case caseAdjacente = listeCases[coordAdjacent[0]][coordAdjacent[1]];
-					
-					//On vérifie qu'on ne teste pas l'autre case du domino
-					if(!coordAdjacent.equals(coordCible[(i==0 ? 1 : 0)])) {
+		listeCases[Xref][Yref] = domino.getCaseRef();
+		listeCases[Xrot][Yrot] = domino.getCaseRot();
+		if(this.isFull()) {
+			listeCases[Xref][Yref] = null;
+			listeCases[Xrot][Yrot] = null;
+			return false;
+		} else {
+			
+			listeCases[Xref][Yref] = null;
+			listeCases[Xrot][Yrot] = null;
+			
+			int[][] coordCible = new int[][] {{Xref,Yref},{Xrot,Yrot}};
+			Case[]  casesDominoAPlacer = new Case[] {domino.getCaseRef(),domino.getCaseRot()};
+			
+			for (int i = 0; i<coordCible.length; i++){
+				int[] coord = coordCible[i];
+				
+				for(int j : new int[] {1,-1}) {
+					for(int k : new int[] {1,-1}) {
 						
-						//On vérifie que la case adjacente n'est pas vide
-						if (caseAdjacente != null) {
+						int[] coordAdjacent = new int[] {coord[0]+j,coord[1]+k};
+						Case caseAdjacente = listeCases[coordAdjacent[0]][coordAdjacent[1]];
+						
+						//On vérifie qu'on ne teste pas l'autre case du domino
+						if(!coordAdjacent.equals(coordCible[(i==0 ? 1 : 0)])) {
 							
-							//On vérifie si la case adjacente a le même terrain que la case du domino
-							if (caseAdjacente.getTypeTerrain().equals(casesDominoAPlacer[i].getTypeTerrain())) {
-								return true;
+							//On vérifie que la case adjacente n'est pas vide
+							if (caseAdjacente != null) {
+								
+								//On vérifie si la case adjacente a le même terrain que la case du domino
+								if (caseAdjacente.getTypeTerrain().equals(casesDominoAPlacer[i].getTypeTerrain())) {
+									return true;
+								}
 							}
 						}
 					}
 				}
-			}
+			}		
+			return false;
 		}
-		return false;
 	}
 	
 	//pas fou actuellement pcq il faut tester avant de placer le domino qui dépassera les limites
