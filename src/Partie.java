@@ -16,7 +16,7 @@ public class Partie {
 	Random rand = new Random();
 
 	public Partie(int nbJoueur) {
-		// on prend une liste avec les couleurs disponibles à attribuer 
+		// on prend une liste avec les couleurs disponibles ï¿½ attribuer 
 		couleursRestantes.addAll(Arrays.asList(Color.values()));
 		this.nbJoueur=nbJoueur;
 		for(int i=0;i<nbJoueur;i++ ) {
@@ -25,6 +25,9 @@ public class Partie {
 		//Attribution des rois
 		if(nbJoueur == 2) {
 			listeJoueurs.get(0).addRoi();
+			listeJoueurs.get(0).addRoi();
+			listeJoueurs.get(1).addRoi();
+			listeJoueurs.get(1).addRoi();
 		}
 	}
 	

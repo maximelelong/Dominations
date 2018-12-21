@@ -12,12 +12,11 @@ public class Royaume {
 	}
 	
 	public boolean placerDomino(Domino domino) {
+		// captation des données
 		int Xref = 0;
 		int Yref = 0;
 		int Xrot = 0;
 		int Yrot = 0;
-		
-		// captation des données
 		
 		if (canPlace(domino, Xref, Yref, Xrot, Yrot)) {
 			listeCases[Xref][Yref] = domino.getCaseRef();
@@ -28,7 +27,15 @@ public class Royaume {
 		
 		
 	}
-
+	/**Attention methode fortement dégueulasse
+	 * 
+	 * @param domino
+	 * @param Xref
+	 * @param Yref
+	 * @param Xrot
+	 * @param Yrot
+	 * @return true si le domino peut être placé à cet emplacement 
+	 */
 	public boolean canPlace(Domino domino, int Xref, int Yref, int Xrot, int Yrot) {
 		
 		//On vérifie que les coordonnées voulues sont dans la grille
@@ -37,7 +44,7 @@ public class Royaume {
 		}
 		
 		//On vérifie que l'emplacement ciblé n'est pas déja occupé
-		boolean emplacementVide = listeCases[Xref][Yref].isEmpty() || listeCases[Xrot][Yrot].isEmpty();
+		boolean emplacementVide = !listeCases[Xref][Yref].isEmpty() || !listeCases[Xrot][Yrot].isEmpty();
 		if (emplacementVide)
 			return false;
 		
@@ -60,27 +67,30 @@ public class Royaume {
 			for (int i = 0; i<coordCible.length; i++){
 				int[] coord = coordCible[i];
 				
-				for(int j : new int[] {1,-1}) {
-					for(int k : new int[] {1,-1}) {
+				//pas les bonnes coordonnées
+				for(int[] supp : new int[][] {{1,0},{-1,0},{0,1},{0,-1}}) {
 						
-						int[] coordAdjacent = new int[] {coord[0]+j,coord[1]+k};
-						Case caseAdjacente = listeCases[coordAdjacent[0]][coordAdjacent[1]];
+					int j = supp[0];
+					int k =supp[1];
+					
+					int[] coordAdjacent = new int[] {coord[0]+j, coord[1]+k};
+					Case caseAdjacente = listeCases[coordAdjacent[0]][coordAdjacent[1]];
+					
+					//On vérifie qu'on ne teste pas l'autre case du domino
+					if(!coordAdjacent.equals(coordCible[(i==0 ? 1 : 0)])) {
 						
-						//On vérifie qu'on ne teste pas l'autre case du domino
-						if(!coordAdjacent.equals(coordCible[(i==0 ? 1 : 0)])) {
+						//On vérifie que la case adjacente n'est pas vide
+						if (!caseAdjacente.isEmpty()) {
 							
-							//On vérifie que la case adjacente n'est pas vide
-							if (!caseAdjacente.isEmpty()) {
-								
-								//On vérifie si la case adjacente a le même terrain que la case du domino
-								//ou si elle est adjacente au chateau
-								if (caseAdjacente.getTypeTerrain().equals(casesDominoAPlacer[i].getTypeTerrain())
-										||caseAdjacente.getTypeTerrain().equals(TypeTerrain.CHATEAU)) {
-									return true;
-								}
+							//On vérifie si la case adjacente a le même terrain que la case du domino
+							//ou si elle est adjacente au chateau
+							if (caseAdjacente.getTypeTerrain().equals(casesDominoAPlacer[i].getTypeTerrain())
+									||caseAdjacente.getTypeTerrain().equals(TypeTerrain.CHATEAU)) {
+								return true;
 							}
 						}
 					}
+					
 				}
 			}		
 			return false;
