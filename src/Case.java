@@ -8,6 +8,11 @@ public class Case {
 	@SuppressWarnings("null")
 	private int Y = (Integer) null;
 	
+	public Case() {
+		typeTerrain = TypeTerrain.NONE;
+		nbCouronnes = 0;
+	}
+	
 	public Case(TypeTerrain type, int nombrebCouronnes) {
 		typeTerrain = type;
 		nbCouronnes = nombrebCouronnes;
@@ -32,9 +37,20 @@ public class Case {
 	public TypeTerrain getTypeTerrain() {
 		return typeTerrain;
 	}
+	
+	public void setTypeTerrain(TypeTerrain type) {
+		typeTerrain = type;
+	}
 
 	public int getNbCouronnes() {
 		return nbCouronnes;
+	}
+	
+	public boolean isEmpty() {
+		if(this.typeTerrain.equals(TypeTerrain.NONE))
+			return true;
+		else
+			return false;
 	}
 
 }

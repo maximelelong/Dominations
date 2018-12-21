@@ -1,5 +1,6 @@
 
 public enum TypeTerrain {
+	NONE,
 	FORET,
 	CHAMPS,
 	MER,

@@ -21,8 +21,14 @@ public class Partie {
 		this.nbJoueur=nbJoueur;
 		for(int i=0;i<nbJoueur;i++ ) {
 			ajouterJoueur(i);
-			
-		}		
+		}
+		//Attribution des rois
+		if(nbJoueur == 2) {
+			listeJoueurs.get(0).addRoi();
+		}
+	}
+	
+	private void premierTour() {
 	}
 	
 	
@@ -47,5 +53,7 @@ public class Partie {
 		dominoAJouer.sort(Comparator.comparing(Domino::getNumero));
 		
 	}
+	
+	
 
 }

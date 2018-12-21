@@ -1,9 +1,11 @@
 public class Royaume {
-	Case[][] listeCases = new Case[9][9];
-	
+	Case[][] listeCases = new Case[9][9];	
+	static int largeurMax = 5;
+	static int hauteurMax = 5;
 	
 	public Royaume() {
-		
+		//On ajoute le chateau au mileu du royaume
+		listeCases[5][5] = new Case(TypeTerrain.CHATEAU, 0);
 	}
 	public void afficherRoyaume() {
 		
@@ -28,30 +30,30 @@ public class Royaume {
 	}
 
 	public boolean canPlace(Domino domino, int Xref, int Yref, int Xrot, int Yrot) {
+		
 		//On vérifie que les coordonnées voulues sont dans la grille
-		if(Xref < 0 || Xref > 9 ||
-			Yref < 0 || Yref > 9||
-			Xrot < 0 || Xrot > 9 ||
-			Yrot < 0 || Yrot > 9){
+		if(!isInGrid(Xref, Yref) || !isInGrid(Xrot, Yrot)){
 						return false;
 		}
 		
 		//On vérifie que l'emplacement ciblé n'est pas déja occupé
-		boolean emplacementVide = listeCases[Xref][Yref] == null || listeCases[Xrot][Yrot] == null;
+		boolean emplacementVide = listeCases[Xref][Yref].isEmpty() || listeCases[Xrot][Yrot].isEmpty();
 		if (emplacementVide)
 			return false;
 		
+		/*Ajoute le domino pour tester si cela dépasse la taille max du royaume
+		 * Teste si c'est le cas puis supprime le domino
+		 */
 		listeCases[Xref][Yref] = domino.getCaseRef();
 		listeCases[Xrot][Yrot] = domino.getCaseRot();
-		if(this.isFull()) {
-			listeCases[Xref][Yref] = null;
-			listeCases[Xrot][Yrot] = null;
+		boolean isFull = this.isFull();
+		listeCases[Xref][Yref] = new Case();
+		listeCases[Xrot][Yrot] = new Case();
+		
+		if(isFull) {
 			return false;
 		} else {
-			
-			listeCases[Xref][Yref] = null;
-			listeCases[Xrot][Yrot] = null;
-			
+						
 			int[][] coordCible = new int[][] {{Xref,Yref},{Xrot,Yrot}};
 			Case[]  casesDominoAPlacer = new Case[] {domino.getCaseRef(),domino.getCaseRot()};
 			
@@ -68,10 +70,12 @@ public class Royaume {
 						if(!coordAdjacent.equals(coordCible[(i==0 ? 1 : 0)])) {
 							
 							//On vérifie que la case adjacente n'est pas vide
-							if (caseAdjacente != null) {
+							if (!caseAdjacente.isEmpty()) {
 								
 								//On vérifie si la case adjacente a le même terrain que la case du domino
-								if (caseAdjacente.getTypeTerrain().equals(casesDominoAPlacer[i].getTypeTerrain())) {
+								//ou si elle est adjacente au chateau
+								if (caseAdjacente.getTypeTerrain().equals(casesDominoAPlacer[i].getTypeTerrain())
+										||caseAdjacente.getTypeTerrain().equals(TypeTerrain.CHATEAU)) {
 									return true;
 								}
 							}
@@ -83,7 +87,6 @@ public class Royaume {
 		}
 	}
 	
-	//pas fou actuellement pcq il faut tester avant de placer le domino qui dépassera les limites
 	public boolean isFull() {
 		int xMin =  9;
 		int xMax = 0;
@@ -91,7 +94,7 @@ public class Royaume {
 		int yMax = 0;
 		for(int x = 0; x < 9; x++) {
 			for(int y = 0; y < 9; y++) {
-				if (listeCases[x][y] != null) {
+				if (!listeCases[x][y].isEmpty()) {
 					if (x>xMax)
 						xMax = x;
 					if(x<xMin)
@@ -103,10 +106,24 @@ public class Royaume {
 				}
 			}
 		}
-		if (xMax-xMin > 5 || yMax-yMin >5) {
+		if (xMax-xMin > largeurMax || yMax-yMin > hauteurMax) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean isInGrid(int x, int y) {
+		if(x < 0 || x > 9 || y < 0 || y > 9){
+			return false;
+		} else 
+			return true;
+	}
+	
+	public Case getCase(int x, int y) {
+		if(isInGrid(x, y)) {
+			return listeCases[x][y];
+		} else 
+			return null;
 	}
 }
