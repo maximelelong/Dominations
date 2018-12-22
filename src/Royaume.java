@@ -1,11 +1,20 @@
 public class Royaume {
-	Case[][] listeCases = new Case[9][9];	
+	static int largeurGrille = 9;
+	static int hauteurGrille = 9;
 	static int largeurMax = 5;
 	static int hauteurMax = 5;
 	
+	Case[][] listeCases = new Case[largeurGrille][hauteurGrille];	
+
 	public Royaume() {
 		//On ajoute le chateau au mileu du royaume
+		for(int x = 0; x < largeurGrille; x++) {
+			for(int y = 0; y < hauteurGrille; y++) {
+				listeCases[x][y] = new Case();
+			}
+		}
 		listeCases[5][5] = new Case(TypeTerrain.CHATEAU, 0);
+		
 	}
 	public void afficherRoyaume() {
 		
@@ -102,8 +111,8 @@ public class Royaume {
 		int xMax = 0;
 		int yMin = 9;
 		int yMax = 0;
-		for(int x = 0; x < 9; x++) {
-			for(int y = 0; y < 9; y++) {
+		for(int x = 0; x < largeurGrille; x++) {
+			for(int y = 0; y < hauteurGrille; y++) {
 				if (!listeCases[x][y].isEmpty()) {
 					if (x>xMax)
 						xMax = x;
@@ -124,7 +133,7 @@ public class Royaume {
 	}
 	
 	public boolean isInGrid(int x, int y) {
-		if(x < 0 || x > 9 || y < 0 || y > 9){
+		if(x < 0 || x > largeurGrille || y < 0 || y > hauteurGrille){
 			return false;
 		} else 
 			return true;
@@ -136,4 +145,27 @@ public class Royaume {
 		} else 
 			return null;
 	}
+	
+	public void printRoyaume() {
+		System.out.println("Test");
+		for(int y = 0; y < hauteurGrille; y++) {
+			//print le type des cases de la ligne ligne
+			for(int x = 0; x < largeurGrille; x++) {
+				System.out.println(listeCases[x][y].getTypeTerrain());
+			}
+			//print le nombre de couronnes des cases de la ligne
+			for(int x = 0; x < largeurGrille; x++) {
+				System.out.println(listeCases[x][y].printCouronnes());
+			}
+			
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

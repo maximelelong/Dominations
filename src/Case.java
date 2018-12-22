@@ -3,10 +3,8 @@ public class Case {
 	
 	private TypeTerrain typeTerrain;
 	private int nbCouronnes;
-	@SuppressWarnings("null")
-	private int X = (Integer) null;
-	@SuppressWarnings("null")
-	private int Y = (Integer) null;
+	private int X;
+	private int Y;
 	
 	public Case() {
 		typeTerrain = TypeTerrain.NONE;
@@ -51,6 +49,15 @@ public class Case {
 			return true;
 		else
 			return false;
+	}
+	
+	public String printCouronnes() {
+		if (this.isEmpty()) {
+			return "BLK";
+		} else if (typeTerrain.equals(TypeTerrain.CHATEAU)){
+			return "   ";
+		}
+		return " " + nbCouronnes + " ";
 	}
 
 }

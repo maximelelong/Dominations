@@ -24,14 +24,19 @@ public class Partie {
 		}
 		//Attribution des rois
 		if(nbJoueur == 2) {
-			listeJoueurs.get(0).addRoi();
-			listeJoueurs.get(0).addRoi();
-			listeJoueurs.get(1).addRoi();
-			listeJoueurs.get(1).addRoi();
+			for(int i = 0; i<nbJoueur ; i++) {
+				listeJoueurs.get(i).addRoi();
+				listeJoueurs.get(i).addRoi();
+			}
+		} else {
+			for(int i = 0; i<nbJoueur ; i++) {
+				listeJoueurs.get(i).addRoi();
+			}
 		}
 	}
 	
 	private void premierTour() {
+		
 	}
 	
 	
