@@ -8,11 +8,8 @@ public class Roi {
 	public Roi(Color color) {
 		this.color=color;
 		this.royaume= new Royaume();
-		
-
-	
-		// TODO Auto-generated constructor stub
 	}
+	
 	public void placerSurDomino(Domino domino) {
 		currentDomino = domino;
 		
@@ -26,5 +23,6 @@ public class Roi {
 	public Domino getCurrentDomino() {
 		return currentDomino;
 	}
+	
 
 }

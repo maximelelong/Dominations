@@ -13,19 +13,27 @@ public class Royaume {
 				listeCases[x][y] = new Case();
 			}
 		}
-		listeCases[5][5] = new Case(TypeTerrain.CHATEAU, 0);
-		
-	}
-	public void afficherRoyaume() {
+		listeCases[4][4] = new Case(TypeTerrain.CHATEAU, 0);
 		
 	}
 	
-	public boolean placerDomino(Domino domino) {
-		// captation des données
-		int Xref = 0;
-		int Yref = 0;
-		int Xrot = 0;
-		int Yrot = 0;
+	public boolean placerDomino(Domino domino, int Xref, int Yref, Direction dir) {
+		int Xrot;
+		int Yrot;
+		if(dir.equals(Direction.HAUT)) {
+			Xrot = Xref;
+			Yrot = Yref - 1;
+		} else if (dir.equals(Direction.BAS)) {
+			Xrot = Xref;
+			Yrot = Yref + 1;
+		} else if (dir.equals(Direction.DROITE)) {
+			Xrot = Xref + 1;
+			Yrot = Yref;
+		} else { //dir.equals(Direction.GAUCHE)
+			Xrot = Xref - 1;
+			Yrot = Yref;
+		}
+		
 		
 		if (canPlace(domino, Xref, Yref, Xrot, Yrot)) {
 			listeCases[Xref][Yref] = domino.getCaseRef();
@@ -147,17 +155,31 @@ public class Royaume {
 	}
 	
 	public void printRoyaume() {
-		System.out.println("Test");
 		for(int y = 0; y < hauteurGrille; y++) {
-			//print le type des cases de la ligne ligne
 			for(int x = 0; x < largeurGrille; x++) {
-				System.out.println(listeCases[x][y].getTypeTerrain());
+				System.out.print(" -----");
 			}
+			System.out.print("\n");
+			//print le type des cases de la ligne ligne	
+			for(int x = 0; x < largeurGrille; x++) {
+				if(x == 0)
+					System.out.print("|");
+				System.out.print(listeCases[x][y].getTypeTerrain() + "|");
+			}
+			System.out.print("\n");
 			//print le nombre de couronnes des cases de la ligne
 			for(int x = 0; x < largeurGrille; x++) {
-				System.out.println(listeCases[x][y].printCouronnes());
+				if(x == 0)
+					System.out.print("|");
+				System.out.print(listeCases[x][y].printCouronnes() + "|");
 			}
+			System.out.print("\n");
 			
+			if (y == hauteurGrille -1 ) {
+				for(int x = 0; x < largeurGrille; x++) {
+					System.out.print(" -----");
+				}
+			}
 		}
 	}
 	

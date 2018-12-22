@@ -1,9 +1,9 @@
 import java.util.ArrayList;
 
 public class Joueur {
-	String nom;
-	Color colorRoi;
-	ArrayList<Roi> listeRois= new ArrayList<>();
+	private String nom;
+	private Color colorRoi;
+	private ArrayList<Roi> listeRois= new ArrayList<>();
 	
 
 	public Joueur(String nom, Color colorRoi) {
@@ -14,6 +14,18 @@ public class Joueur {
 	public void addRoi() {
 		listeRois.add(new Roi(this.colorRoi));
 		
+	}
+	public ArrayList<Roi> getListeRois() {
+		return listeRois;
+	}
+	public void setListeRois(ArrayList<Roi> listeRois) {
+		this.listeRois = listeRois;
+	}
+	public String getNom() {
+		return nom;
+	}
+	public Color getColorRoi() {
+		return colorRoi;
 	}
 	
 

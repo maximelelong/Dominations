@@ -53,11 +53,9 @@ public class Case {
 	
 	public String printCouronnes() {
 		if (this.isEmpty()) {
-			return "BLK";
-		} else if (typeTerrain.equals(TypeTerrain.CHATEAU)){
-			return "   ";
+			return "     ";
 		}
-		return " " + nbCouronnes + " ";
+		return "  " + nbCouronnes + "  ";
 	}
 
 }

@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -9,7 +11,8 @@ public class Partie {
 	static Scanner scan = new Scanner(System.in); 
 	ArrayList<Color> couleursRestantes=new ArrayList<>();
 	ArrayList<Joueur> listeJoueurs=new ArrayList<>();
-	ArrayList<Domino> dominoAJouer= new ArrayList<>();
+	ArrayList<Domino> dominosAChoisir= new ArrayList<>();
+	ArrayList<Domino> dominosAjouer = new ArrayList<Domino>();
 	ArrayList<Domino> dominosPioche =new ArrayList<>();
 	int nbJoueur;
 	
@@ -36,6 +39,16 @@ public class Partie {
 	}
 	
 	private void premierTour() {
+		tirerNouveauxDominos();
+		List<Roi> listeRois = new ArrayList<Roi>();
+		for (Joueur joueur : listeJoueurs) {
+			for (Roi roi : joueur.getListeRois()) {
+				listeRois.add(roi);
+			}
+		}
+		//L'ordre de jeu au premier tour est aléatoire
+		int randomIndex = rand.nextInt(listeRois.size());
+	
 		
 	}
 	
@@ -54,13 +67,21 @@ public class Partie {
 			int randomIndex = rand.nextInt(dominosPioche.size());
 			Domino domino = dominosPioche.get(randomIndex);
 			dominosPioche.remove(domino);
-			dominoAJouer.add(domino);
+			dominosAChoisir.add(domino);
 		}
 		
 		//Permet d'ordonner les dominos selon leur nombre
-		dominoAJouer.sort(Comparator.comparing(Domino::getNumero));
-		
+		dominosAChoisir.sort(Comparator.comparing(Domino::getNumero));
 	}
+	
+	public void choisirDomino(Roi roi, int rangDomino) {
+		roi.placerSurDomino(dominosAChoisir.get(rangDomino));
+	}
+	
+	
+	
+	
+	
 	
 	
 
