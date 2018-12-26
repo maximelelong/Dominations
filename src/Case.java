@@ -5,10 +5,13 @@ public class Case {
 	private int nbCouronnes;
 	private int X;
 	private int Y;
+	private boolean isZoned = false;
 	
-	public Case() {
+	public Case(int x, int y) {
 		typeTerrain = TypeTerrain.NONE;
 		nbCouronnes = 0;
+		this.X = x;
+		this.Y = y;
 	}
 	
 	public Case(TypeTerrain type, int nombrebCouronnes) {
@@ -51,11 +54,26 @@ public class Case {
 			return false;
 	}
 	
+	public boolean isCastle() {
+		if(this.typeTerrain.equals(TypeTerrain.CHATEAU))
+			return true;
+		else
+			return false;
+	}
+	
 	public String printCouronnes() {
 		if (this.isEmpty()) {
 			return "     ";
 		}
 		return "  " + nbCouronnes + "  ";
+	}
+	
+	public void setZoned() {
+		isZoned = true;
+	}
+	
+	public boolean getIsZoned() {
+		return isZoned;
 	}
 
 }

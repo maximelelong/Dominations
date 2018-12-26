@@ -15,6 +15,8 @@ public class Main {
 		
 		
 		royaume.printRoyaume();
+		System.out.println("");
+		System.out.println("\n" +royaume.calculerScore());
 		
 	}
 

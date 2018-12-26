@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -10,10 +9,10 @@ import java.util.Scanner;
 public class Partie {
 	static Scanner scan = new Scanner(System.in); 
 	ArrayList<Color> couleursRestantes=new ArrayList<>();
+	ArrayList<Domino> dominosPioche =new ArrayList<>();
 	ArrayList<Joueur> listeJoueurs=new ArrayList<>();
 	ArrayList<Domino> dominosAChoisir= new ArrayList<>();
 	ArrayList<Domino> dominosAjouer = new ArrayList<Domino>();
-	ArrayList<Domino> dominosPioche =new ArrayList<>();
 	int nbJoueur;
 	
 	Random rand = new Random();
@@ -25,12 +24,16 @@ public class Partie {
 		for(int i=0;i<nbJoueur;i++ ) {
 			ajouterJoueur(i);
 		}
+		
 		//Attribution des rois
+		
+		//s'il y a 2 joueurs => 2 rois par joueur
 		if(nbJoueur == 2) {
 			for(int i = 0; i<nbJoueur ; i++) {
 				listeJoueurs.get(i).addRoi();
 				listeJoueurs.get(i).addRoi();
 			}
+		//sinon => 1 roi par joueur
 		} else {
 			for(int i = 0; i<nbJoueur ; i++) {
 				listeJoueurs.get(i).addRoi();
@@ -47,9 +50,12 @@ public class Partie {
 			}
 		}
 		//L'ordre de jeu au premier tour est aléatoire
-		int randomIndex = rand.nextInt(listeRois.size());
-	
-		
+		for(int i =  0; i < nbJoueur; i++) {
+			int randomIndex = rand.nextInt(listeRois.size());
+			Roi roi = listeRois.get(randomIndex);
+			choisirDomino(roi);
+			listeRois.remove(roi);
+		}
 	}
 	
 	
@@ -74,7 +80,16 @@ public class Partie {
 		dominosAChoisir.sort(Comparator.comparing(Domino::getNumero));
 	}
 	
-	public void choisirDomino(Roi roi, int rangDomino) {
+	public void choisirDomino(Roi roi) {
+		System.out.println("Quel domino choisissez-vous ? ");
+		int rangDomino = -1;
+		while(rangDomino < 0 || rangDomino > nbJoueur) {
+			try {
+				rangDomino = Integer.valueOf(scan.nextLine());
+			} catch (Exception e) {
+				System.out.println("Choix invalide, veuillez recommencer :");
+			}
+		}
 		roi.placerSurDomino(dominosAChoisir.get(rangDomino));
 	}
 	
