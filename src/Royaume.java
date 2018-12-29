@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Royaume {
 	static int largeurGrille = 9;
@@ -52,7 +54,7 @@ public class Royaume {
 		
 		
 	}
-	/**Attention methode fortement dégueulasse
+	/**Attention methode fortement dégueulasse(moins dégueulasse maintenant)
 	 * 
 	 * @param domino
 	 * @param Xref
@@ -65,12 +67,11 @@ public class Royaume {
 		
 		//On vérifie que les coordonnées voulues sont dans la grille
 		if(!isInGrid(Xref, Yref) || !isInGrid(Xrot, Yrot)){
-						return false;
+			return false;
 		}
 		
 		//On vérifie que l'emplacement ciblé n'est pas déja occupé
-		boolean emplacementVide = !listeCases[Xref][Yref].isEmpty() || !listeCases[Xrot][Yrot].isEmpty();
-		if (emplacementVide)
+		if (!listeCases[Xref][Yref].isEmpty() || !listeCases[Xrot][Yrot].isEmpty())
 			return false;
 		
 		/*Ajoute le domino pour tester si cela dépasse la taille max du royaume
@@ -78,53 +79,108 @@ public class Royaume {
 		 */
 		listeCases[Xref][Yref] = domino.getCaseRef();
 		listeCases[Xrot][Yrot] = domino.getCaseRot();
-		boolean isFull = this.isFull();
+		boolean isObversized = isOversized();
 		listeCases[Xref][Yref] = new Case(Xref, Yref);
 		listeCases[Xrot][Yrot] = new Case(Xrot, Yrot);
 		
-		if(isFull) {
+		if(isObversized) {
 			return false;
 		} else {
 						
-			int[][] coordCible = new int[][] {{Xref,Yref},{Xrot,Yrot}};
-			Case[]  casesDominoAPlacer = new Case[] {domino.getCaseRef(),domino.getCaseRot()};
+			Case caseRef = domino.getCaseRef();
+			Case caseRot = domino.getCaseRot();
+						
+			ArrayList<Case> voisinsRef = getVoisins(Xref, Yref);
+			ArrayList<Case> voisinsRot = getVoisins(Xrot, Yrot);
 			
-			for (int i = 0; i<coordCible.length; i++){
-				int[] coord = coordCible[i];
-				
-				for(int[] supp : new int[][] {{1,0},{-1,0},{0,1},{0,-1}}) {
-						
-					int j = supp[0];
-					int k =supp[1];
+			//on teste les voisins de l'emplacement de la case Ref
+			for (Case caseAdj : voisinsRef) {
+				if (caseAdj.getTypeTerrain().equals(caseRef.getTypeTerrain())
+						||caseAdj.isCastle()) {
+					return true;
+				}
+			}
+			
+			//on teste les voisins de l'emplacement de la case Rot
+			for (Case caseAdj : voisinsRot) {
+				if (caseAdj.getTypeTerrain().equals(caseRot.getTypeTerrain())
+						||caseAdj.isCastle()) {
+					return true;
+				}
+			}
+			
+			//si aucune case voisine ne correspond, le domino ne peut pas être placé
+			return false;
+			
+		}
+	}
+	private boolean isOversized() {
+		Map<String, Integer> limites = getLimites();
+		int xMax = limites.get("xMax");
+		int xMin = limites.get("xMin");
+		int yMin = limites.get("yMin");
+		int yMax = limites.get("yMax");
+		
+		int largeur = xMax - xMin + 1;
+		int hauteur = yMax - yMin + 1;
+		//on vérifie si le royaume ne dépasse pas 5x5
+		if (largeur > largeurMax || hauteur > hauteurMax) {
+			return true;
+		} else
+			return false;
+	}
+	
+	/**Vérifie si le royaume est plein
+	 * Renvoie true si plus aucun domino ne peut être ajouté au royaume
+	 * Renvoie false sinon
+	 * 
+	 * @return
+	 */
+	public boolean isFull() {
+		Map<String, Integer> limites = getLimites();
+		int xMax = limites.get("xMax");
+		int xMin = limites.get("xMin");
+		int yMin = limites.get("yMin");
+		int yMax = limites.get("yMax");
+		
+		int largeur = xMax - xMin + 1;
+		int hauteur = yMax - yMin + 1;
+		
+		//si le royaume a atteint la largeur max et hauteur max
+		if (largeur == largeurMax && hauteur == hauteurMax) {
+			//on parcours toutes les cases	
+			for(int x = xMin; x <= xMax; x++) {
+				for(int y = yMin; y <= yMax; y++) {
 					
-					int[] coordAdjacent = new int[] {coord[0]+j, coord[1]+k};
-					if(isInGrid(coordAdjacent[0], coordAdjacent[1])) {
+					if(listeCases[x][y].isEmpty()) {
 						
-						Case caseAdjacente = listeCases[coordAdjacent[0]][coordAdjacent[1]];
-						
-						//On vérifie qu'on ne teste pas l'autre case du domino
-						if(!coordAdjacent.equals(coordCible[(i==0 ? 1 : 0)])) {
+						for (Case caseAdjacente : getVoisins(x, y)) {
 							
-							//On vérifie que la case adjacente n'est pas vide
-							if (!caseAdjacente.isEmpty()) {
+							if(caseAdjacente.isEmpty()) {
 								
-								//On vérifie si la case adjacente a le même terrain que la case du domino
-								//ou si elle est adjacente au chateau
-								if (caseAdjacente.getTypeTerrain().equals(casesDominoAPlacer[i].getTypeTerrain())
-										||caseAdjacente.getTypeTerrain().equals(TypeTerrain.CHATEAU)) {
-									return true;
+								int xAdj = caseAdjacente.getX();
+								int yAdj = caseAdjacente.getY();
+								//s'il possède un voisin vide qui reste dans les dimensions max
+								//alors la grille n'est pas pleine car cela signifie qu'il y a
+								//2 cases côtes à cotes et donc que l'on peut y mettre un domino
+								if(xAdj <= xMax && xAdj >= xMin && yAdj <= yMax && yAdj >= yMin) {
+									return false;
 								}
 							}
 						}
 					}
 				}
-			}		
+			}
+			return true;
+		} else { //si le royaume n'a pas atteint la taille max il ne peut pas être plein
 			return false;
 		}
 	}
 	
-	public boolean isFull() {
-		int xMin =  9;
+	private Map<String, Integer> getLimites() {
+		Map<String, Integer> limites = new HashMap<>();
+		
+		int xMin = 9;
 		int xMax = 0;
 		int yMin = 9;
 		int yMax = 0;
@@ -142,14 +198,15 @@ public class Royaume {
 				}
 			}
 		}
-		if (xMax-xMin > largeurMax || yMax-yMin > hauteurMax) {
-			return true;
-		} else {
-			return false;
-		}
+		
+		limites.put("xMin", xMin);
+		limites.put("xMax", xMax);
+		limites.put("yMin", yMin);
+		limites.put("yMax", yMax);
+		return limites;
 	}
 	
-	public boolean isInGrid(int x, int y) {
+	public static boolean isInGrid(int x, int y) {
 		if(x < 0 || x >= largeurGrille || y < 0 || y >= hauteurGrille){
 			return false;
 		} else 
@@ -164,7 +221,13 @@ public class Royaume {
 	}
 	
 	public void printRoyaume() {
+		System.out.print("  ");
+		for(int x = 0; x < largeurGrille; x++) {
+			System.out.print("   "+ x + "  ");
+		}
+		System.out.println("");
 		for(int y = 0; y < hauteurGrille; y++) {
+			System.out.print("  ");
 			for(int x = 0; x < largeurGrille; x++) {
 				System.out.print(" -----");
 			}
@@ -172,24 +235,26 @@ public class Royaume {
 			//print le type des cases de la ligne ligne	
 			for(int x = 0; x < largeurGrille; x++) {
 				if(x == 0)
-					System.out.print("|");
+					System.out.print(y +" |");
 				System.out.print(listeCases[x][y].getTypeTerrain() + "|");
 			}
 			System.out.print("\n");
 			//print le nombre de couronnes des cases de la ligne
 			for(int x = 0; x < largeurGrille; x++) {
 				if(x == 0)
-					System.out.print("|");
+					System.out.print("  |");
 				System.out.print(listeCases[x][y].printCouronnes() + "|");
 			}
 			System.out.print("\n");
 			
 			if (y == hauteurGrille -1 ) {
+				System.out.print("  ");
 				for(int x = 0; x < largeurGrille; x++) {
 					System.out.print(" -----");
 				}
 			}
 		}
+		System.out.println("");
 	}
 	
 	private void delimitZones() {
@@ -197,43 +262,40 @@ public class Royaume {
 			for(int y = 0; y < hauteurGrille; y++) {
 				
 				Case caseCourante = listeCases[x][y];
+				
 				/* On ne va ajouter à une zone que les cases qui sont pas vides
 				 *  et on n'ajoute pas le château non plus 
+				 *  On vérifie également que la case n'a pas déjà été zonée
 				 */
-				if(!caseCourante.isEmpty() && !caseCourante.isCastle()) {
+				if(!caseCourante.isEmpty() && !caseCourante.isCastle() && !caseCourante.getIsZoned()) {
+					ArrayList<Case> subZone = new ArrayList<>();
+					subZone.add(caseCourante);
 					
-					for(int[] supp : new int[][] {{1,0},{-1,0},{0,1},{0,-1}}) {
-						
-						int j = supp[0];
-						int k =supp[1];
-						
-						int[] coordAdjacent = new int[] {x+j, y+k};
-						if(isInGrid(coordAdjacent[0], coordAdjacent[1])) {
-							
-							Case caseAdjacente = listeCases[coordAdjacent[0]][coordAdjacent[1]];
-							
+					for (Case caseAdjacente : getVoisins(x, y)) {
+						//On regarde si la case adjacente est de même terrain que la case courante
+						if(caseCourante.getTypeTerrain().equals(caseAdjacente.getTypeTerrain())) {
 							if(caseAdjacente.getIsZoned()) {
-								//On regarde si la case adjacente est de même terrain que la case courante
-								if(caseCourante.getTypeTerrain().equals(caseAdjacente.getTypeTerrain())) {
-									ArrayList<Case> zone = getZone(caseAdjacente);
-									//on ajoute la case à la zone
-									listeZones.get(listeZones.indexOf(zone)).add(caseCourante);
-									caseCourante.setZoned();
-									System.out.println("Added (" + x + "," + y +") to a zone");
-								}
-								
+								ArrayList<Case> zone = getZone(caseAdjacente);
+								//on ajoute la case à la zone
+								caseCourante.setZoned();
+								listeZones.get(listeZones.indexOf(zone)).add(caseCourante);
+								break;
+							} else {
+								subZone.add(caseAdjacente);
 							}
 						}
 					}
+					
 					/*Si après recherche, on ne peut ajouter la case à aucune zone
 					 * on en crée une nouvelle avec la case
 					 */
 					if(!caseCourante.getIsZoned()) {
+						for (Case case1 : subZone) {
+							case1.setZoned();
+						}
 						ArrayList<Case> newZone = new ArrayList<Case>();
-						newZone.add(caseCourante);
+						newZone.addAll(subZone);
 						listeZones.add(newZone);
-						caseCourante.setZoned();
-						System.out.println("Created new zone for (" + x + "," + y +")");
 					}
 				}
 			}
@@ -266,10 +328,32 @@ public class Royaume {
 		return null;
 	}
 	
-	
-	
-	
-	
+	/** Renvoie une liste de tous les voisins d'une case dont les coordonnées sont passées
+	 * en paramètres
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public ArrayList<Case> getVoisins(int x, int y) {
+		
+		ArrayList<Case> voisins = new ArrayList<Case>();
+		
+		for(int[] supp : new int[][] {{1,0},{-1,0},{0,1},{0,-1}}) {
+			
+			int j = supp[0];
+			int k =supp[1];
+			int xAdj = x + j;
+			int yAdj = y + k;
+			
+			if(isInGrid(xAdj, yAdj)) {
+				Case caseAdjacente = listeCases[xAdj][yAdj];
+				voisins.add(caseAdjacente);
+			}
+		}
+		return voisins;
+	}
+
 	
 	
 	
