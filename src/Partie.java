@@ -56,7 +56,7 @@ public class Partie {
 		
 		premierTour();
 		
-		while (dominosPioche.size() != 0) {
+		while (dominosPioche.size() > listeRois.size()) {
 			nouveauTour();
 		}
 	}
@@ -194,7 +194,7 @@ public class Partie {
 	private void importDominos() {
 		String csvFile = "C:\\Users\\maxim\\eclipse-workspace\\Dominations\\dominos.csv";
         String line = "";
-        String cvsSplitBy = ",";
+        String csvSplitBy = ",";
         Map<String, TypeTerrain> map = Outils.getDicoStringToType();
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
@@ -205,7 +205,7 @@ public class Partie {
             while ((line = br.readLine()) != null) {
 
                 // use comma as separator
-                String[] dominoString = line.split(cvsSplitBy);
+                String[] dominoString = line.split(csvSplitBy);
                 
                 int nbCouronne1 = Integer.valueOf(dominoString[0]);
                 TypeTerrain type1 = map.get(dominoString[1]);

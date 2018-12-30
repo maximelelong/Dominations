@@ -79,11 +79,11 @@ public class Royaume {
 		 */
 		listeCases[Xref][Yref] = domino.getCaseRef();
 		listeCases[Xrot][Yrot] = domino.getCaseRot();
-		boolean isObversized = isOversized();
+		boolean isOversized = isOversized();
 		listeCases[Xref][Yref] = new Case(Xref, Yref);
 		listeCases[Xrot][Yrot] = new Case(Xrot, Yrot);
 		
-		if(isObversized) {
+		if(isOversized) {
 			return false;
 		} else {
 						
@@ -231,7 +231,7 @@ public class Royaume {
 			for(int x = 0; x < largeurGrille; x++) {
 				System.out.print(" -----");
 			}
-			System.out.print("\n");
+			System.out.println("");
 			//print le type des cases de la ligne ligne	
 			for(int x = 0; x < largeurGrille; x++) {
 				if(x == 0)
