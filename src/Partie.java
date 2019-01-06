@@ -289,7 +289,7 @@ public class Partie {
 	 * Code de base copié depuis https://www.mkyong.com/java/how-to-read-and-parse-csv-file-in-java/
 	 */
 	private void importDominos() {
-		String csvFile = "C:\\Users\\maxim\\eclipse-workspace\\Dominations\\dominos.csv";
+		String csvFile = Partie.class.getProtectionDomain().getCodeSource().getLocation().getPath() +"\\..\\dominos.csv";
         String line = "";
         String csvSplitBy = ",";
         Map<String, TypeTerrain> map = Outils.getDicoStringToType();
