@@ -17,17 +17,20 @@ public class Partie {
 	ArrayList<Domino> dominosAChoisir= new ArrayList<>();
 	ArrayList<Domino> dominosAjouer = new ArrayList<Domino>();
 	ArrayList<Roi> listeRois = new ArrayList<Roi>();
+	Roi currentRoi;
 	int nbJoueur;
 	
 	Random rand = new Random();
 
 	public Partie(int nbJoueur) {
+		
+		this.nbJoueur=nbJoueur;
+		
 		//import des dominos depuis le fichier csv
 		importDominos();
 		
 		// on prend une liste avec les couleurs disponibles ï¿½ attribuer 
 		couleursRestantes.addAll(Arrays.asList(Color.values()));
-		this.nbJoueur=nbJoueur;
 		for(int i=0;i<nbJoueur;i++ ) {
 			ajouterJoueur(i);
 		}
@@ -36,53 +39,96 @@ public class Partie {
 		
 		//s'il y a 2 joueurs => 2 rois par joueur
 		if(nbJoueur == 2) {
+			removeDominosFromPioche(24);
 			for(int i = 0; i<nbJoueur ; i++) {
 				listeJoueurs.get(i).addRoi();
 				listeJoueurs.get(i).addRoi();
-				
 			}
 		//sinon => 1 roi par joueur
 		} else {
+			if (nbJoueur == 3)
+				removeDominosFromPioche(12);
 			for(int i = 0; i<nbJoueur ; i++) {
 				listeJoueurs.get(i).addRoi();
 			}
 		}
 		
 		for (Joueur joueur : listeJoueurs) {
-			for (Roi roi : joueur.getListeRois()) {
-				listeRois.add(roi);
-			}
+			listeRois.addAll(joueur.getListeRois());
 		}
 		
 		premierTour();
 		
-		while (dominosPioche.size() > listeRois.size()) {
+		
+		boolean royaumesAllFull = false;
+		while (dominosPioche.size() >= listeRois.size() && !royaumesAllFull) {
+			
+			royaumesAllFull = true;
+			//vérifie si au moins un des royaume n'est pas plein => il peut encore jouer => nouveau tour
+			for (Roi roi : listeRois) {
+				if (!roi.getRoyaume().isFull()) {
+					royaumesAllFull = false;
+					break;
+				}
+			}
+			
 			nouveauTour();
+			
+		}
+		
+		//Calcul du score de chaque joueur
+		for (Joueur joueur : listeJoueurs) {
+			int score = 0;
+			for (Roi roi : joueur.getListeRois()) {
+				score += roi.getRoyaume().calculerScore();
+			}
+			joueur.setScore(score);
+		}
+		
+		//On ordonne les joueurs selon leur score (dans l'ordre décroissant)
+		listeJoueurs.sort(Comparator.comparing(Joueur::getScore).reversed());
+		
+		
+		System.out.println("");
+		System.out.println(Outils.stringInFrame("Résultats",5));
+		System.out.println("");
+		for(int i = 0; i < listeJoueurs.size(); i++) {
+			Joueur joueur = listeJoueurs.get(i);
+			System.out.println((i+1) + "e : " + joueur.getNom() + " (" + joueur.getColorRoi() +") avec " + joueur.getScore());
 		}
 	}
 	
 	public void nouveauTour() {
+		
+//		System.out.println(Outils.stringInFrame("==================== Nouveau tour ===================="));
+//		System.out.println("Dominos restants dans la pioche : " + dominosPioche.size());
+//		System.out.println("");
+		
 		dominosAjouer.addAll(dominosAChoisir);
 		dominosAChoisir.clear();
-		tirerNouveauxDominos();
-		for (Domino dominoAjouer : dominosAjouer) {
-			Roi roi = dominoAjouer.getRoi();
-			System.out.println(Outils.stringInFrame("Tour du roi " + roi.getColor()));
+		tirerNouveauxDominos();	
+		
+		int i = dominosAjouer.size() - 1;
+		while(i >= 0) {
+			Domino dominoAJouer = dominosAjouer.get(0);
+			
+			Roi roi = dominoAJouer.getRoi();
+			currentRoi = roi;
 			
 			//le joueur choisi un domino pour le prochain tour
 			choisirDomino(roi);
-			dominoAjouer.removeRoi();			
+			dominoAJouer.removeRoi();			
 			
 			//le joueur choisit ce qu'il fait du domino choisi au tour précédent
 			if (roi.getRoyaume().isFull()) {
 				System.out.println("Le royaume du roi " + roi.getColor() + " est plein");
 				System.out.println("Le domino à jouer est défaussé");
 			} else {
-				demandeOuPlacerDomino(dominoAjouer, roi);
+				demandeOuPlacerDomino(dominoAJouer, roi);
 			}
-			roi.getRoyaume().printRoyaume();
+			i -= 1;
+			dominosAjouer.remove(dominoAJouer);
 		}
-		dominosAjouer.clear();
 	}
 	
 	
@@ -99,81 +145,130 @@ public class Partie {
 		dominosAChoisir.sort(Comparator.comparing(Domino::getNumero));
 	}
 	
-	public void printDominosAchoisir() {
-		for (int i = 0; i < dominosAChoisir.size(); i++) {
-			Domino domino = dominosAChoisir.get(i);
-			System.out.println("(" + i + ")");
-			System.out.println(domino);
+	public String listeDominosToString(ArrayList<Domino> listeDomino) {
+		String string = "";
+		for (int i = 0; i < listeDomino.size(); i++) {
+			Domino domino = listeDomino.get(i);
+			String colorRoi = "";
 			if (domino.isChoosed()) {
-				System.out.println("Choisi par le roi " + domino.getRoi().getColor());
+				colorRoi = " \nRoi\n" + domino.getRoi().getColor();
 			}
-			System.out.println("");
+			string = string + Outils.stringAside(1, "\n(" + (i+1) + ")",domino.toString(),colorRoi);
+			
+			string += "\n";
 		}
+		return string;
 	}	
 	
 	private void choisirDomino(Roi roi) {
-		System.out.println("Quel domino choisissez-vous ? \n");
-		printDominosAchoisir();
-		int rangDomino = -1;
 		
-		while(rangDomino < 0 || rangDomino >= dominosAChoisir.size()) {
-			try {
-				rangDomino = Integer.valueOf(scan.nextLine());
-				if(dominosAChoisir.get(rangDomino).isChoosed()) {
-					System.out.println("Ce domino a déjà été choisi, veuillez recommencer");
-					rangDomino = -1;
+		/*
+		 * Dans cette méthode, tous les indices affichés ont un "+1"
+		 * pour compter à partir de 1 pour l'utilisateur et pas à partir de 0 		
+		 */
+		
+		int rangDomino;
+		
+		if (roi.isAI()) {
+			
+			
+			ArrayList<Domino> dominosDispo = new ArrayList<>();
+			for (Domino domino : dominosAChoisir) {
+				if (!domino.isChoosed()) {
+					dominosDispo.add(domino);
 				}
-			} catch (Exception e) {
-				System.out.println("Choix invalide, veuillez recommencer :");
+			}
+			
+			Domino dominoChoisi = IA.choisirBestDomino(roi.getRoyaume(), dominosDispo);
+			rangDomino = dominosAChoisir.indexOf(dominoChoisi);
+			
+			printAfterRefresh("A choisi le " + (rangDomino+1) + "e domino");
+			
+		} else {			
+			printAfterRefresh("Quel domino choisissez-vous pour le prochain tour ? \n");
+			rangDomino = -1;
+			
+			while(rangDomino < 0 || rangDomino >= dominosAChoisir.size()) {
+				try {
+					rangDomino = Integer.valueOf(scan.nextLine()) - 1;
+					if(dominosAChoisir.get(rangDomino).isChoosed()) {
+						printAfterRefresh("Ce domino a déjà été choisi, veuillez recommencer");
+						rangDomino = -1;
+					}
+				} catch (Exception e) {
+					printAfterRefresh("Choix invalide, veuillez recommencer :");
+				}
 			}
 		}
+		
 		Domino dominoChoisi = dominosAChoisir.get(rangDomino);
 		dominoChoisi.setRoi(roi);
 	}
 
 	private void demandeOuPlacerDomino(Domino domino, Roi roi) {
-		int Xref;
-		int Yref;
-		Direction dir;
-		boolean validChoice = false;
-	
-		roi.getRoyaume().printRoyaume();
-	
-		while(!validChoice) {
-			System.out.println("Souhaitez vous placer ce domino ? (o/n)");
-			if (Outils.scanOuiNon()) {
-	
-				System.out.println("Entrez la coordonnée X de la case Ref");
-				Xref = Outils.scanInt();
-				System.out.println("Entrez la coordonnée Y de la case Ref");
-				Yref = Outils.scanInt();
-				if(!Royaume.isInGrid(Xref, Yref)) {
-					System.out.println("Ces coordonnées ne sont pas dans la grille");
-				}else {
-					dir = Outils.scanDirection();
-					if (roi.getRoyaume().placerDomino(domino, Xref, Yref, dir)) {
-						validChoice = true;
-						System.out.println("Le domino a été placé avec succès");
-					} else {
-						System.out.println("Vous ne pouvez pas placer ce domino ici, veuillez recommencer");
-					}
-	
-				}
+		Royaume royaume = roi.getRoyaume();
+		
+		if (roi.isAI()) {
+			ArrayList<Move> possibleMoves = Move.getPossibleMoves(royaume, domino); 
+			if (possibleMoves.size() == 0) {
+				printAfterRefresh("Le domino à jouer ne peut pas être placé et a été défaussé");
 			} else {
-				System.out.println("Le domino a été défaussé");
+				Move bestMove = IA.choisirBestMove(royaume, domino);
+				royaume.placerDomino(domino, bestMove);
+				int Xref = bestMove.getXref();
+				int Yref = bestMove.getYref();
+				Direction dir = bestMove.getDir();
+				printAfterRefresh("A placé son domino (" + Xref + "," + Yref + "," + dir +")");
 			}
+		} else {
+			
+			int Xref;
+			int Yref;
+			Direction dir;
+			
+			boolean validChoice = false;
+			while(!validChoice) {
+				printAfterRefresh("Souhaitez vous placer ce domino ? (o/n)");
+				if (Outils.scanOuiNon()) {
+					
+					printAfterRefresh("Entrez la coordonnée X de la case Ref");
+					Xref = Outils.scanInt();
+					printAfterRefresh("Entrez la coordonnée Y de la case Ref");
+					Yref = Outils.scanInt();
+					if(!Royaume.isInGrid(Xref, Yref)) {
+						printAfterRefresh("Ces coordonnées ne sont pas dans la grille");
+					}else {
+						refreshPlateau();
+						dir = Outils.scanDirection();
+						Move move = new Move(Xref, Yref, dir);
+						if (royaume.placerDomino(domino, move)) {
+							validChoice = true;
+							printAfterRefresh("Le domino a été placé avec succès");
+						} else {
+							System.out.println("Vous ne pouvez pas placer ce domino ici, veuillez recommencer");
+						}
+						
+					}
+				} else {
+					System.out.println("Le domino a été défaussé");
+					validChoice = true;
+				}
+			}
+			
 		}
 	}
 
 	private void premierTour() {
+		System.out.println(Outils.stringInFrame("==================== Debut de la partie ===================="));
 		tirerNouveauxDominos();
+		
 		ArrayList<Roi> tempListeRois = new ArrayList<>();
 		tempListeRois.addAll(listeRois);
 		//L'ordre de jeu au premier tour est aléatoire
 		for(int i =  0; i < listeRois.size(); i++) {
 			int randomIndex = rand.nextInt(tempListeRois.size());
 			Roi roi = tempListeRois.get(randomIndex);
-			System.out.println(Outils.stringInFrame("Tour du roi " + roi.getColor()));
+			currentRoi = roi;
 			choisirDomino(roi);
 			tempListeRois.remove(roi);
 		}
@@ -183,16 +278,18 @@ public class Partie {
 		Color couleur = couleursRestantes.get(0);
 		System.out.println("Entre le nom du joueur "+ couleur);
 		String nomJoueur = scan.nextLine();
-		listeJoueurs.add(new Joueur(nomJoueur, couleur));
+		System.out.println("Voulez vous que ce joueur soit joué par une IA ? (o/n)");
+		boolean AI = Outils.scanOuiNon();
+		listeJoueurs.add(new Joueur(nomJoueur, couleur, AI));
 		// on enleve la couleur de la liste pour que chaque couleur soit individuelle.
 		couleursRestantes.remove(0);	
 	}
 
 	/*
-	 * Copié depuis https://www.mkyong.com/java/how-to-read-and-parse-csv-file-in-java/
+	 * Code de base copié depuis https://www.mkyong.com/java/how-to-read-and-parse-csv-file-in-java/
 	 */
 	private void importDominos() {
-		String csvFile = "C:\\Users\\maxim\\eclipse-workspace\\Dominations\\dominos.csv";
+		String csvFile = "C:\\Users\\maxim\\git\\Dominations\\dominos.csv";
         String line = "";
         String csvSplitBy = ",";
         Map<String, TypeTerrain> map = Outils.getDicoStringToType();
@@ -224,6 +321,45 @@ public class Partie {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+	
+	private Domino getRandomFromPioche() {
+		int randomIndex = rand.nextInt(dominosPioche.size());
+		return dominosPioche.get(randomIndex);
+	}
+	
+	private void removeDominosFromPioche(int nbrToRemove) {
+		for(int i = 0; i < nbrToRemove; i++) {
+			Domino dominoToRemove = getRandomFromPioche();
+			dominosPioche.remove(dominoToRemove);
+		}
+	}
+	
+	public void refreshPlateau() {
+		int nbreRois = listeRois.size();
+		
+		String[] stringRoyaumes = new String[nbreRois]; 
+		
+		for (int i = 0; i < nbreRois; i++) {
+			Roi roi = listeRois.get(i);
+			String string = Outils.stringInFrame("Royaume " + roi.getColor(),22) + roi.getRoyaume();
+			stringRoyaumes[i] = string;
+		}
+		
+		System.out.println(Outils.stringAside(5, stringRoyaumes));
+		
+		String dominosAChoisirWithTitle = Outils.stringInFrame("Dominos à choisir") +"\n" + listeDominosToString(dominosAChoisir);
+		String dominosAJouerWithTitle = Outils.stringInFrame("Dominos à jouer") + "\n" + listeDominosToString(dominosAjouer);
+		
+		String listesDominos = Outils.stringAside(5, dominosAChoisirWithTitle, dominosAJouerWithTitle);
+		System.out.println(listesDominos);
+		
+		System.out.println(Outils.stringInFrame("Tour du roi " + currentRoi.getColor()));
+	}
+	
+	public void printAfterRefresh(String str) {
+		refreshPlateau();
+		System.out.println(str);
 	}
 
 }

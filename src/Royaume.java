@@ -9,6 +9,7 @@ public class Royaume {
 	static int hauteurMax = 5;
 	
 	Case[][] listeCases = new Case[largeurGrille][hauteurGrille];
+	
 	//Utilisé pour compter les points du royaume à la fin de la partie
 	ArrayList<ArrayList<Case>> listeZones = new ArrayList<>();
 
@@ -23,25 +24,14 @@ public class Royaume {
 		
 	}
 	
-	public boolean placerDomino(Domino domino, int Xref, int Yref, Direction dir) {
-		int Xrot;
-		int Yrot;
-		if(dir.equals(Direction.HAUT)) {
-			Xrot = Xref;
-			Yrot = Yref - 1;
-		} else if (dir.equals(Direction.BAS)) {
-			Xrot = Xref;
-			Yrot = Yref + 1;
-		} else if (dir.equals(Direction.DROITE)) {
-			Xrot = Xref + 1;
-			Yrot = Yref;
-		} else { //dir.equals(Direction.GAUCHE)
-			Xrot = Xref - 1;
-			Yrot = Yref;
-		}
+	public boolean placerDomino(Domino domino, Move move) {
 		
-		
-		if (canPlace(domino, Xref, Yref, Xrot, Yrot)) {
+		if (canPlace(domino, move)) {
+			int Xref = move.getXref();
+			int Yref = move.getYref();
+			int Xrot = move.getXrot();
+			int Yrot = move.getYrot();
+			
 			listeCases[Xref][Yref] = domino.getCaseRef();
 			listeCases[Xref][Yref].setX(Xref);
 			listeCases[Xref][Yref].setY(Yref);
@@ -51,8 +41,11 @@ public class Royaume {
 			return true;
 		} else
 			return false;
-		
-		
+	}
+	
+	public boolean placerDomino(Domino domino, int Xref, int Yref, Direction dir) {
+		Move move = new Move(Xref, Yref, dir);
+		return placerDomino(domino, move);
 	}
 	/**Attention methode fortement dégueulasse(moins dégueulasse maintenant)
 	 * 
@@ -63,7 +56,13 @@ public class Royaume {
 	 * @param Yrot
 	 * @return true si le domino peut être placé à cet emplacement 
 	 */
-	public boolean canPlace(Domino domino, int Xref, int Yref, int Xrot, int Yrot) {
+	public boolean canPlace(Domino domino, Move move) {
+		
+		int Xref = move.getXref();
+		int Yref = move.getYref();
+		int Xrot = move.getXrot();
+		int Yrot = move.getYrot();
+		
 		
 		//On vérifie que les coordonnées voulues sont dans la grille
 		if(!isInGrid(Xref, Yref) || !isInGrid(Xrot, Yrot)){
@@ -220,44 +219,48 @@ public class Royaume {
 			return null;
 	}
 	
-	public void printRoyaume() {
-		System.out.print("  ");
+	public String toString() {
+		String string = "";
+		string += "\n  ";
 		for(int x = 0; x < largeurGrille; x++) {
-			System.out.print("   "+ x + "  ");
+			string += "   "+ x + "  ";
 		}
-		System.out.println("");
+		string += "\n";
 		for(int y = 0; y < hauteurGrille; y++) {
-			System.out.print("  ");
+			string += "  ";
 			for(int x = 0; x < largeurGrille; x++) {
-				System.out.print(" -----");
+				string += " -----";
 			}
-			System.out.println("");
+			string += "\n";
 			//print le type des cases de la ligne ligne	
 			for(int x = 0; x < largeurGrille; x++) {
 				if(x == 0)
-					System.out.print(y +" |");
-				System.out.print(listeCases[x][y].getTypeTerrain() + "|");
+					string += y +" |";
+				string += listeCases[x][y].getTypeTerrain() + "|";
 			}
-			System.out.print("\n");
+			string += "\n";
 			//print le nombre de couronnes des cases de la ligne
 			for(int x = 0; x < largeurGrille; x++) {
 				if(x == 0)
-					System.out.print("  |");
-				System.out.print(listeCases[x][y].printCouronnes() + "|");
+					string += "  |";
+				string += listeCases[x][y].printCouronnes() + "|";
 			}
-			System.out.print("\n");
+			string += "\n";
 			
 			if (y == hauteurGrille -1 ) {
-				System.out.print("  ");
+				string += "  ";
 				for(int x = 0; x < largeurGrille; x++) {
-					System.out.print(" -----");
+					string += " -----";
 				}
 			}
 		}
-		System.out.println("");
+		return string;
 	}
 	
 	private void delimitZones() {
+		//on rénitialise les zones
+		listeZones = new ArrayList<ArrayList<Case>>();
+		
 		for (int x = 0; x < largeurGrille; x++) {
 			for(int y = 0; y < hauteurGrille; y++) {
 				
@@ -301,9 +304,15 @@ public class Royaume {
 			}
 		}
 		
+		for (int x = 0; x < largeurGrille; x++) {
+			for(int y = 0; y < hauteurGrille; y++) {
+				listeCases[x][y].setUnzoned();
+			}
+		}
 	}
 	
 	public int calculerScore() {
+		
 		delimitZones();
 		
 		int score = 0;
@@ -315,6 +324,29 @@ public class Royaume {
 			
 			score += couronnesZone*zone.size();
 		}
+		
+		
+		/* 
+		 * Implémentation de la règle "Empire du Milieu"
+		 * (si le chateau est au milieu du royaume => +10 points)
+		 */
+		Map<String, Integer> limites = getLimites();
+		int xMax = limites.get("xMax");
+		int xMin = limites.get("xMin");
+		int yMin = limites.get("yMin");
+		int yMax = limites.get("yMax");
+		if(xMin == 2 && xMax == 6 && yMin == 2 && yMax == 6) {
+			score += 10;
+		}
+		
+		/*
+		 * Implémentation de la règle "Harmonie"
+		 * (si royaume entièrement remplie => +5 points)
+		 */
+		if(getCaseInRoyaume() == 25) {
+			score += 5;			
+		}
+		
 		return score;
 	}
 	
@@ -335,7 +367,7 @@ public class Royaume {
 	 * @param y
 	 * @return
 	 */
-	public ArrayList<Case> getVoisins(int x, int y) {
+	private ArrayList<Case> getVoisins(int x, int y) {
 		
 		ArrayList<Case> voisins = new ArrayList<Case>();
 		
@@ -353,8 +385,44 @@ public class Royaume {
 		}
 		return voisins;
 	}
-
 	
+	public int getCaseInRoyaume() {
+		int nbrCaseNonvide = 0;
+		for (int x = 0; x < largeurGrille; x++) {
+			for(int y = 0; y < hauteurGrille; y++) {
+				if(!listeCases[x][y].isEmpty())
+					nbrCaseNonvide += 1;
+			}
+		}
+		return nbrCaseNonvide;
+	}
+	
+	public int getScoreAfterMove(Domino domino, Move move) {
+		
+		if (canPlace(domino, move)) {
+			int Xref = move.getXref();
+			int Yref = move.getYref();
+			int Xrot = move.getXrot();
+			int Yrot = move.getYrot();
+			
+			listeCases[Xref][Yref] = domino.getCaseRef();
+			listeCases[Xref][Yref].setX(Xref);
+			listeCases[Xref][Yref].setY(Yref);
+			listeCases[Xrot][Yrot] = domino.getCaseRot();
+			listeCases[Xrot][Yrot].setX(Xrot);
+			listeCases[Xrot][Yrot].setY(Yrot);
+			
+			int score = calculerScore();
+			
+			listeCases[Xref][Yref] = new Case(Xref, Yref);
+			listeCases[Xrot][Yrot] = new Case(Xrot, Yrot);
+			
+			
+			return score;
+		} else {
+			return -1;
+		}
+	}
 	
 	
 }

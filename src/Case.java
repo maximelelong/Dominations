@@ -72,6 +72,10 @@ public class Case {
 		isZoned = true;
 	}
 	
+	public void setUnzoned() {
+		isZoned = false;
+	}
+	
 	public boolean getIsZoned() {
 		return isZoned;
 	}

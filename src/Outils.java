@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -101,5 +103,88 @@ public class Outils {
 		
 		String result = line + "\n| " + str + " |\n" +line;
 		return result;
+	}
+	
+	public static String stringInFrame(String str, int spaceBefore) {
+		String line = "====";
+		String spaces = "";
+		for(int i = 0; i < spaceBefore; i++) {
+			spaces += " ";
+		}
+	
+		for (int i = 0; i < str.length(); i++) {
+			line += "=";
+		}
+		
+		String result = spaces + line + "\n" + spaces +"| " + str + " |\n" + spaces + line;
+		return result;
+	}
+	public static String stringAside(int nbrSpacesBetween, String...strings) {
+		
+		if (strings.length == 1) {
+			return strings[0];
+		}
+		
+		String bigString = "";
+		
+		int maxNbrLines = 0;
+		for (String string : strings) {
+			String[] linesArray = string.split("\n");
+			if (linesArray.length > maxNbrLines) {
+				maxNbrLines = linesArray.length;
+			}
+		}
+		
+		ArrayList<ArrayList<String>> stringsArrayList = new ArrayList<ArrayList<String>>();
+		
+		
+		for (String string : strings) {
+			String[] linesArray = string.split("\n");
+			ArrayList<String> lines = new ArrayList<String>(Arrays.asList(linesArray));
+			
+			int linesToAdd = maxNbrLines - lines.size();
+			for(int i = 0; i < linesToAdd; i++) {
+				lines.add("");
+			}
+			
+			int lineMaxLenght = 0;
+			for (String line : lines) {
+				int lineLenght = line.length();
+				if (lineLenght > lineMaxLenght) {
+					lineMaxLenght = line.length();
+				}
+			}
+			
+			//On ajoute des espaces pour que chaque ligne soit de même longueur
+			for(int i = 0; i < lines.size(); i++) {
+				String line = lines.get(i);
+				int lineLenght = line.length();
+				int spacesToAdd = lineMaxLenght - lineLenght;
+				if (spacesToAdd > 0) {
+					for(int j = 0; j < spacesToAdd; j++) {
+						line += " ";
+						lines.remove(i);
+						lines.add(i, line);
+					}
+				}
+			}
+			
+//			for (String line : lines) {
+//				
+//			}
+			stringsArrayList.add(lines);
+		}
+		
+		for (int i = 0; i < maxNbrLines; i++) {
+			for (ArrayList<String> lines : stringsArrayList) {
+				bigString += lines.get(i);
+				for(int j = 0; j < nbrSpacesBetween; j++) {
+					bigString += " ";
+				}
+			}
+			bigString += "\n";
+		}
+		
+		return bigString;
 	}
 }

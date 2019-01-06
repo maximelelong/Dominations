@@ -45,7 +45,7 @@ public class Domino {
 		String str = "";
 		str = " ----- ----- \n";
 		str += "|" + caseRef.getTypeTerrain() + "|" + caseRot.getTypeTerrain() + "| \n";
-		str += "|" + caseRef.printCouronnes() + "|" + caseRot.printCouronnes() + "|\n";
+		str += "|" + caseRef.printCouronnes() + "|" + caseRot.printCouronnes() + "| \n";
 		str += " ----- ----- ";
 		return str;	
 		

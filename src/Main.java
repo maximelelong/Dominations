@@ -50,14 +50,21 @@ public class Main {
 		royaume.placerDomino(domino11, 5, 2, Direction.DROITE);
 		
 		
-		royaume.printRoyaume();
-
-		System.out.println("\n" + domino1);
-		System.out.println("\n" +royaume.calculerScore());
-		boolean isFull = royaume.isFull();
-		System.out.println(isFull);
+//		System.out.println(royaume);
+//		System.out.println("");
+//		System.out.println("Nombre de case dans le royaume : " + royaume.getCaseInRoyaume());
+//		boolean isFull = royaume.isFull();
+//		System.out.println("Royaume plein ? : " + isFull);
+//		System.out.println("Score du royaume : " +royaume.calculerScore());
 		
-		//Partie partie = new Partie(3);
+		Partie partie = new Partie(3);
+		
+		
+//		String[] array = {royaume.toString(), royaume.toString(), royaume.toString(), royaume.toString()};
+//		
+//		String test = Outils.stringAside(5, array);
+//		System.out.println(test);
+//		System.out.println(royaume);
 		
 	}
 
