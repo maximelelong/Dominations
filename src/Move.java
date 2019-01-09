@@ -2,15 +2,23 @@ import java.util.ArrayList;
 
 public class Move {
 	
+	private Domino domino;
 	private int Xref;
 	private int Yref;
 	private Direction dir;
+	private boolean delete;
 	
-	public Move(int Xref, int Yref, Direction dir) {
-		super();
+	public Move(Domino domino, int Xref, int Yref, Direction dir) {
 		this.Xref = Xref;
 		this.Yref = Yref;
 		this.dir = dir;
+		this.domino = domino;
+		this.delete = false;
+	}
+	
+	public Move(Domino domino, boolean delete) {
+		this.domino = domino;
+		this.delete = delete;
 	}
 
 	public int getXref() {
@@ -35,6 +43,10 @@ public class Move {
 
 	public void setDir(Direction dir) {
 		this.dir = dir;
+	}
+	
+	public Domino getDomino() {
+		return domino;
 	}
 	
 	
@@ -71,14 +83,18 @@ public class Move {
 		for (int x = 0; x < Royaume.largeurGrille; x++) {
 			for (int y = 0; y < Royaume.hauteurGrille; y++) {
 				for (Direction dir : Direction.values()) {
-					Move move = new Move(x, y, dir);
-					if(royaume.canPlace(domino, move)) {
+					Move move = new Move(domino, x, y, dir);
+					if(royaume.canPlace(move)) {
 						possibleMoves.add(move);
 					}
 				}
 			}
 		}
 		return possibleMoves;
+	}
+	
+	public boolean haveToBeDeleted() {
+		return delete;
 	}
 
 }

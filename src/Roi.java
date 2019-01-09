@@ -1,26 +1,13 @@
 
 public class Roi {
-	private Royaume royaume ;
-	private Color color;
-	private boolean AI;
+	private GameColor color;
 	
-	public Roi(Color color, boolean AI) {
+	public Roi(GameColor color) {
 		this.color=color;
-		this.royaume= new Royaume();
-		this.AI = AI;
 	}
 	
-	public Royaume getRoyaume() {
-		return royaume;
-	}
-	public Color getColor() {
+	public GameColor getColor() {
 		return color;
-	}
-	
-	public boolean isAI() {
-		return AI;
-	}
-
-	
+	}	
 
 }

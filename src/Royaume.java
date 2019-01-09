@@ -24,9 +24,10 @@ public class Royaume {
 		
 	}
 	
-	public boolean placerDomino(Domino domino, Move move) {
+	public boolean placerDomino(Move move) {
+		Domino domino = move.getDomino();
 		
-		if (canPlace(domino, move)) {
+		if (canPlace(move)) {
 			int Xref = move.getXref();
 			int Yref = move.getYref();
 			int Xrot = move.getXrot();
@@ -43,11 +44,7 @@ public class Royaume {
 			return false;
 	}
 	
-	public boolean placerDomino(Domino domino, int Xref, int Yref, Direction dir) {
-		Move move = new Move(Xref, Yref, dir);
-		return placerDomino(domino, move);
-	}
-	/**Attention methode fortement dégueulasse(moins dégueulasse maintenant)
+	/**Vérifie si un domino peut être placé
 	 * 
 	 * @param domino
 	 * @param Xref
@@ -56,8 +53,8 @@ public class Royaume {
 	 * @param Yrot
 	 * @return true si le domino peut être placé à cet emplacement 
 	 */
-	public boolean canPlace(Domino domino, Move move) {
-		
+	public boolean canPlace(Move move) {
+		Domino domino = move.getDomino();
 		int Xref = move.getXref();
 		int Yref = move.getYref();
 		int Xrot = move.getXrot();
@@ -397,9 +394,10 @@ public class Royaume {
 		return nbrCaseNonvide;
 	}
 	
-	public int getScoreAfterMove(Domino domino, Move move) {
+	public int getScoreAfterMove(Move move) {
 		
-		if (canPlace(domino, move)) {
+		Domino domino = move.getDomino();
+		if (canPlace(move)) {
 			int Xref = move.getXref();
 			int Yref = move.getYref();
 			int Xrot = move.getXrot();
@@ -414,14 +412,22 @@ public class Royaume {
 			
 			int score = calculerScore();
 			
-			listeCases[Xref][Yref] = new Case(Xref, Yref);
-			listeCases[Xrot][Yrot] = new Case(Xrot, Yrot);
-			
+			revertMove(move);			
 			
 			return score;
 		} else {
 			return -1;
 		}
+	}
+	
+	public void revertMove(Move move) {
+		int Xref = move.getXref();
+		int Yref = move.getYref();
+		int Xrot = move.getXrot();
+		int Yrot = move.getYrot();
+		
+		listeCases[Xref][Yref] = new Case(Xref, Yref);
+		listeCases[Xrot][Yrot] = new Case(Xrot, Yrot);		
 	}
 	
 	

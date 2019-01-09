@@ -2,20 +2,24 @@ import java.util.ArrayList;
 
 public class Joueur {
 	private String nom;
-	private Color colorRoi;
+	private GameColor colorRoi;
 	private ArrayList<Roi> listeRois= new ArrayList<>();
+	private ArrayList<Move> nextMoves = new ArrayList<>();
+	private Royaume royaume;
 	private int score = 0;
 	private boolean AI;
 	
+	
 
-	public Joueur(String nom, Color colorRoi, boolean AI) {
+	public Joueur(String nom, GameColor colorRoi, boolean AI) {
 		this.nom= nom;
 		this.colorRoi=colorRoi;
 		this.AI  = AI;
+		this.royaume = new Royaume();
 	}
 	
 	public void addRoi() {
-		listeRois.add(new Roi(this.colorRoi, this.AI));
+		listeRois.add(new Roi(this.colorRoi));
 	}
 	
 	public ArrayList<Roi> getListeRois() {
@@ -30,7 +34,7 @@ public class Joueur {
 		return nom;
 	}
 	
-	public Color getColorRoi() {
+	public GameColor getColorRoi() {
 		return colorRoi;
 	}
 	
@@ -40,6 +44,31 @@ public class Joueur {
 	
 	public void setScore(int score) {
 		this.score = score;
+	}
+	
+	public Royaume getRoyaume() {
+		return royaume;
+	}
+	
+	public void addNextMove(Move move) {
+		nextMoves.add(move);
+	}
+	
+	public ArrayList<Move> getNextMoves() {
+		return nextMoves;
+	}
+	
+	public Move getMoveToDoForDomino(Domino domino) {
+		for (Move move : nextMoves) {
+			if (move.getDomino().equals(domino)) {
+				return move;
+			}
+		}
+		return null;
+	}
+	
+	public boolean isAI() {
+		return AI;
 	}
 	
 
