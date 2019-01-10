@@ -57,9 +57,9 @@ public class Move {
 		} else if (dir.equals(Direction.BAS)) {
 			Xrot = Xref;
 		} else if (dir.equals(Direction.DROITE)) {
-			Xrot = Xref + 1;
-		} else { //dir.equals(Direction.GAUCHE)
 			Xrot = Xref - 1;
+		} else { //dir.equals(Direction.GAUCHE)
+			Xrot = Xref + 1;
 		}
 		return Xrot;
 	}
@@ -67,9 +67,9 @@ public class Move {
 	public int getYrot() {
 		int Yrot;
 		if(dir.equals(Direction.HAUT)) {
-			Yrot = Yref - 1;
-		} else if (dir.equals(Direction.BAS)) {
 			Yrot = Yref + 1;
+		} else if (dir.equals(Direction.BAS)) {
+			Yrot = Yref - 1;
 		} else if (dir.equals(Direction.DROITE)) {
 			Yrot = Yref;
 		} else { //dir.equals(Direction.GAUCHE)

@@ -29,9 +29,17 @@ public class Partie {
 		
 		// on prend une liste avec les couleurs disponibles ï¿½ attribuer 
 		couleursRestantes.addAll(Arrays.asList(GameColor.values()));
-		for(int i=0;i<nbJoueur;i++ ) {
-			ajouterJoueur(i);
+//		for(int i=0;i<nbJoueur;i++ ) {
+//			ajouterJoueur(i);
+//		}
+		
+		for(int i=0;i<nbJoueur-1;i++ ) {
+			ajouterIA();
 		}
+		GameColor couleur = couleursRestantes.get(0);
+		listeJoueurs.add(new Joueur("J1", couleur, false));
+		couleursRestantes.remove(0);
+		
 		
 		//Attribution des rois
 		
@@ -112,17 +120,18 @@ public class Partie {
 			currentRoi = roi;
 			
 			//le joueur choisi un domino pour le prochain tour
+			GUI.refreshBoard();
 			choisirDomino(roi);
 			dominoAJouer.removeRoi();			
 			
 			//le joueur choisit ce qu'il fait du domino choisi au tour précédent
+			GUI.refreshBoard();
 			if (getJoueurOfRoi(roi).getRoyaume().isFull()) {
 				System.out.println("Le royaume du roi " + roi.getColor() + " est plein");
 				System.out.println("Le domino à jouer est défaussé");
 			} else {
 				demandeOuPlacerDomino(dominoAJouer, roi);
 			}
-			GUI.refreshBoard();
 			i -= 1;
 		}
 	}
@@ -183,20 +192,22 @@ public class Partie {
 			printAfterRefresh("A choisi le " + (rangDomino+1) + "e domino");
 			
 		} else {			
+			GUI.refreshBoard();
 			printAfterRefresh("Quel domino choisissez-vous pour le prochain tour ? \n");
-			rangDomino = -1;
-			
-			while(rangDomino < 0 || rangDomino >= dominosAChoisir.size()) {
-				try {
-					rangDomino = Integer.valueOf(scan.nextLine()) - 1;
-					if(dominosAChoisir.get(rangDomino).isChoosed()) {
-						printAfterRefresh("Ce domino a déjà été choisi, veuillez recommencer");
-						rangDomino = -1;
-					}
-				} catch (Exception e) {
-					printAfterRefresh("Choix invalide, veuillez recommencer :");
-				}
-			}
+//			rangDomino = -1;
+//			
+//			while(rangDomino < 0 || rangDomino >= dominosAChoisir.size()) {
+//				try {
+//					rangDomino = Integer.valueOf(scan.nextLine()) - 1;
+//					if(dominosAChoisir.get(rangDomino).isChoosed()) {
+//						printAfterRefresh("Ce domino a déjà été choisi, veuillez recommencer");
+//						rangDomino = -1;
+//					}
+//				} catch (Exception e) {
+//					printAfterRefresh("Choix invalide, veuillez recommencer :");
+//				}
+//			}
+			rangDomino = GUI.choisirDomino(joueur);
 		}
 		
 		Domino dominoChoisi = dominosAChoisir.get(rangDomino);
@@ -226,35 +237,36 @@ public class Partie {
 			int Xref;
 			int Yref;
 			Direction dir;
-			
+			GUI.refreshBoard();
 			boolean validChoice = false;
-			while(!validChoice) {
-				printAfterRefresh("Souhaitez vous placer ce domino ? (o/n)");
-				if (Outils.scanOuiNon()) {
-					
-					printAfterRefresh("Entrez la coordonnée X de la case Ref");
-					Xref = Outils.scanInt();
-					printAfterRefresh("Entrez la coordonnée Y de la case Ref");
-					Yref = Outils.scanInt();
-					if(!Royaume.isInGrid(Xref, Yref)) {
-						printAfterRefresh("Ces coordonnées ne sont pas dans la grille");
-					}else {
-						refreshPlateau();
-						dir = Outils.scanDirection();
-						Move move = new Move(domino, Xref, Yref, dir);
-						if (royaume.placerDomino(move)) {
-							validChoice = true;
-							printAfterRefresh("Le domino a été placé avec succès");
-						} else {
-							System.out.println("Vous ne pouvez pas placer ce domino ici, veuillez recommencer");
-						}
-						
-					}
-				} else {
-					System.out.println("Le domino a été défaussé");
-					validChoice = true;
-				}
-			}
+			GUI.choosePlaceForDomino(joueur, domino);
+//			while(!validChoice) {
+//				printAfterRefresh("Souhaitez vous placer ce domino ? (o/n)");
+//				if (Outils.scanOuiNon()) {
+//					
+//					printAfterRefresh("Entrez la coordonnée X de la case Ref");
+//					Xref = Outils.scanInt();
+//					printAfterRefresh("Entrez la coordonnée Y de la case Ref");
+//					Yref = Outils.scanInt();
+//					if(!Royaume.isInGrid(Xref, Yref)) {
+//						printAfterRefresh("Ces coordonnées ne sont pas dans la grille");
+//					}else {
+//						refreshPlateau();
+//						dir = Outils.scanDirection();
+//						Move move = new Move(domino, Xref, Yref, dir);
+//						if (royaume.placerDomino(move)) {
+//							validChoice = true;
+//							printAfterRefresh("Le domino a été placé avec succès");
+//						} else {
+//							System.out.println("Vous ne pouvez pas placer ce domino ici, veuillez recommencer");
+//						}
+//						
+//					}
+//				} else {
+//					System.out.println("Le domino a été défaussé");
+//					validChoice = true;
+//				}
+//			}
 		}
 		dominosAjouer.remove(domino);
 	}
@@ -270,6 +282,7 @@ public class Partie {
 			int randomIndex = rand.nextInt(tempListeRois.size());
 			Roi roi = tempListeRois.get(randomIndex);
 			currentRoi = roi;
+			GUI.refreshBoard();
 			choisirDomino(roi);
 			tempListeRois.remove(roi);
 		}
@@ -284,6 +297,12 @@ public class Partie {
 		listeJoueurs.add(new Joueur(nomJoueur, couleur, AI));
 		// on enleve la couleur de la liste pour que chaque couleur soit individuelle.
 		couleursRestantes.remove(0);	
+	}
+	
+	private void ajouterIA() {
+		GameColor couleur = couleursRestantes.get(0);
+		listeJoueurs.add(new Joueur("Ia", couleur, true));
+		couleursRestantes.remove(0);
 	}
 
 	/*
