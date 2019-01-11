@@ -72,7 +72,7 @@ public class Partie {
 		while (dominosPioche.size() >= listeRois.size() && !royaumesAllFull) {
 			
 			royaumesAllFull = true;
-			//vérifie si au moins un des royaume n'est pas plein => il peut encore jouer => nouveau tour
+			//vï¿½rifie si au moins un des royaume n'est pas plein => il peut encore jouer => nouveau tour
 			for (Roi roi : listeRois) {
 				if (!getJoueurOfRoi(roi).getRoyaume().isFull()) {
 					royaumesAllFull = false;
@@ -90,11 +90,11 @@ public class Partie {
 			joueur.setScore(score);
 		}
 		
-		//On ordonne les joueurs selon leur score (dans l'ordre décroissant)
+		//On ordonne les joueurs selon leur score (dans l'ordre dï¿½croissant)
 		listeJoueurs.sort(Comparator.comparing(Joueur::getScore).reversed());
 		
 		System.out.println("");
-		System.out.println(Outils.stringInFrame("Résultats",5));
+		System.out.println(Outils.stringInFrame("Rï¿½sultats",5));
 		System.out.println("");
 		for(int i = 0; i < listeJoueurs.size(); i++) {
 			Joueur joueur = listeJoueurs.get(i);
@@ -124,11 +124,11 @@ public class Partie {
 			choisirDomino(roi);
 			dominoAJouer.removeRoi();			
 			
-			//le joueur choisit ce qu'il fait du domino choisi au tour précédent
+			//le joueur choisit ce qu'il fait du domino choisi au tour prï¿½cï¿½dent
 			GUI.refreshBoard();
 			if (getJoueurOfRoi(roi).getRoyaume().isFull()) {
 				System.out.println("Le royaume du roi " + roi.getColor() + " est plein");
-				System.out.println("Le domino à jouer est défaussé");
+				System.out.println("Le domino ï¿½ jouer est dï¿½faussï¿½");
 			} else {
 				demandeOuPlacerDomino(dominoAJouer, roi);
 			}
@@ -168,9 +168,9 @@ public class Partie {
 	private void choisirDomino(Roi roi) {
 		
 		/*
-		 * Dans cette méthode, tous les indices affichés ont un "+1"
-		 * pour compter à partir de 1 pour l'utilisateur et pas à partir de 0
-		 * Inversement les indices entrés par l'utilisateur sont décrementés de 1	
+		 * Dans cette mï¿½thode, tous les indices affichï¿½s ont un "+1"
+		 * pour compter ï¿½ partir de 1 pour l'utilisateur et pas ï¿½ partir de 0
+		 * Inversement les indices entrï¿½s par l'utilisateur sont dï¿½crementï¿½s de 1	
 		 */
 		
 		int rangDomino;
@@ -200,7 +200,7 @@ public class Partie {
 //				try {
 //					rangDomino = Integer.valueOf(scan.nextLine()) - 1;
 //					if(dominosAChoisir.get(rangDomino).isChoosed()) {
-//						printAfterRefresh("Ce domino a déjà été choisi, veuillez recommencer");
+//						printAfterRefresh("Ce domino a dï¿½jï¿½ ï¿½tï¿½ choisi, veuillez recommencer");
 //						rangDomino = -1;
 //					}
 //				} catch (Exception e) {
@@ -222,14 +222,14 @@ public class Partie {
 			Move moveToDo = joueur.getMoveToDoForDomino(domino);
 			
 			if (moveToDo.haveToBeDeleted()) {
-				printAfterRefresh("Le domino à jouer ne peut pas être placé et a été défaussé");
+				printAfterRefresh("Le domino ï¿½ jouer ne peut pas ï¿½tre placï¿½ et a ï¿½tï¿½ dï¿½faussï¿½");
 			} else {
 				royaume.placerDomino(moveToDo);
 				
 				int Xref = moveToDo.getXref();
 				int Yref = moveToDo.getYref();
 				Direction dir = moveToDo.getDir();
-				printAfterRefresh("A placé son domino (" + Xref + "," + Yref + "," + dir +")");
+				printAfterRefresh("A placï¿½ son domino (" + Xref + "," + Yref + "," + dir +")");
 			}
 			joueur.getNextMoves().remove(moveToDo);
 		} else {
@@ -244,26 +244,26 @@ public class Partie {
 //				printAfterRefresh("Souhaitez vous placer ce domino ? (o/n)");
 //				if (Outils.scanOuiNon()) {
 //					
-//					printAfterRefresh("Entrez la coordonnée X de la case Ref");
+//					printAfterRefresh("Entrez la coordonnï¿½e X de la case Ref");
 //					Xref = Outils.scanInt();
-//					printAfterRefresh("Entrez la coordonnée Y de la case Ref");
+//					printAfterRefresh("Entrez la coordonnï¿½e Y de la case Ref");
 //					Yref = Outils.scanInt();
 //					if(!Royaume.isInGrid(Xref, Yref)) {
-//						printAfterRefresh("Ces coordonnées ne sont pas dans la grille");
+//						printAfterRefresh("Ces coordonnï¿½es ne sont pas dans la grille");
 //					}else {
 //						refreshPlateau();
 //						dir = Outils.scanDirection();
 //						Move move = new Move(domino, Xref, Yref, dir);
 //						if (royaume.placerDomino(move)) {
 //							validChoice = true;
-//							printAfterRefresh("Le domino a été placé avec succès");
+//							printAfterRefresh("Le domino a ï¿½tï¿½ placï¿½ avec succï¿½s");
 //						} else {
 //							System.out.println("Vous ne pouvez pas placer ce domino ici, veuillez recommencer");
 //						}
 //						
 //					}
 //				} else {
-//					System.out.println("Le domino a été défaussé");
+//					System.out.println("Le domino a ï¿½tï¿½ dï¿½faussï¿½");
 //					validChoice = true;
 //				}
 //			}
@@ -277,7 +277,7 @@ public class Partie {
 		
 		ArrayList<Roi> tempListeRois = new ArrayList<>();
 		tempListeRois.addAll(listeRois);
-		//L'ordre de jeu au premier tour est aléatoire
+		//L'ordre de jeu au premier tour est alï¿½atoire
 		for(int i =  0; i < listeRois.size(); i++) {
 			int randomIndex = rand.nextInt(tempListeRois.size());
 			Roi roi = tempListeRois.get(randomIndex);
@@ -292,7 +292,7 @@ public class Partie {
 		GameColor couleur = couleursRestantes.get(0);
 		System.out.println("Entre le nom du joueur "+ couleur);
 		String nomJoueur = scan.nextLine();
-		System.out.println("Voulez vous que ce joueur soit joué par une IA ? (o/n)");
+		System.out.println("Voulez vous que ce joueur soit jouï¿½ par une IA ? (o/n)");
 		boolean AI = Outils.scanOuiNon();
 		listeJoueurs.add(new Joueur(nomJoueur, couleur, AI));
 		// on enleve la couleur de la liste pour que chaque couleur soit individuelle.
@@ -306,17 +306,17 @@ public class Partie {
 	}
 
 	/*
-	 * Code de base copié depuis https://www.mkyong.com/java/how-to-read-and-parse-csv-file-in-java/
+	 * Code de base copiï¿½ depuis https://www.mkyong.com/java/how-to-read-and-parse-csv-file-in-java/
 	 */
 	private void importDominos() {
-		String csvFile = Partie.class.getProtectionDomain().getCodeSource().getLocation().getPath() +"\\..\\dominos.csv";
+		String csvFile = Partie.class.getProtectionDomain().getCodeSource().getLocation().getPath() +"/../dominos.csv";
         String line = "";
         String csvSplitBy = ",";
         Map<String, TypeTerrain> map = Outils.getDicoStringToType();
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
         	
-        	//saute la première ligne qui décrit le contenu de chaque colonne
+        	//saute la premiï¿½re ligne qui dï¿½crit le contenu de chaque colonne
         	br.readLine();
 
             while ((line = br.readLine()) != null) {
@@ -367,8 +367,8 @@ public class Partie {
 		
 		System.out.println(Outils.stringAside(5, stringRoyaumes));
 		
-		String dominosAChoisirWithTitle = Outils.stringInFrame("Dominos à choisir") +"\n" + listeDominosToString(dominosAChoisir);
-		String dominosAJouerWithTitle = Outils.stringInFrame("Dominos à jouer") + "\n" + listeDominosToString(dominosAjouer);
+		String dominosAChoisirWithTitle = Outils.stringInFrame("Dominos ï¿½ choisir") +"\n" + listeDominosToString(dominosAChoisir);
+		String dominosAJouerWithTitle = Outils.stringInFrame("Dominos ï¿½ jouer") + "\n" + listeDominosToString(dominosAjouer);
 		
 		String listesDominos = Outils.stringAside(5, dominosAChoisirWithTitle, dominosAJouerWithTitle);
 		System.out.println(listesDominos);

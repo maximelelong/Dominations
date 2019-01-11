@@ -22,28 +22,114 @@ public class GUI {
 	}
 	public static void choosePlaceForDomino(Joueur joueur, Domino domino) {
 		Royaume royaume = joueur.getRoyaume();
-		Direction dir = Direction.GAUCHE;
+		Direction dir = Direction.DROITE;
 		int XStartRoyaume = getRoyaumeXStart(joueur);
 		int YStartRoyaume = getRoyaumeYStart(joueur);
+		
+		int xDominoToPlay = XDominosAJouer+ tileSize + (XDominosAChoisir - XDominosAJouer)/2;
+		int yDominoToPlay = 801;
+		Case caseRef = domino.getCaseRef();
+		Case caseRot = domino.getCaseRot();
+		
+		loadBoard("");
+		StdDraw.setPenColor(Color.RED);
+		StdDraw.filledRectangle(xDominoToPlay -tileSize -spaceBetweenRoyaumes*2, yDominoToPlay, 20, 30);
+		StdDraw.filledRectangle(xDominoToPlay +tileSize +spaceBetweenRoyaumes*2, yDominoToPlay, 20, 30);
+		printCase(caseRef, xDominoToPlay, yDominoToPlay);
+		printCase(caseRot, xDominoToPlay+tileSize, yDominoToPlay);
+		StdDraw.show();
+		
+		boolean isMousePressed = false;
+		
 		while (true) {
-			if (StdDraw.isMousePressed()) {
-				
+			
+			if (StdDraw.isMousePressed() && !isMousePressed) {
+				isMousePressed = true;
 				int x = (int) StdDraw.mouseX();
 				int y = (int) StdDraw.mouseY();
 				if (x > XStartRoyaume && x < XStartRoyaume + royaumeSize &&
 						y > YStartRoyaume && y < YStartRoyaume + royaumeSize) {
-					int xCoord = (x - XStartRoyaume)/tileSize;//division entière
+					int xCoord = (x - XStartRoyaume)/tileSize;//division entiï¿½re
 					int yCoord = (y - YStartRoyaume)/tileSize;
-					System.out.println("("+xCoord +","+yCoord+")");
 					
 					if (royaume.placerDomino(new Move(domino, xCoord, yCoord, dir))) {
 						break;
 					}
+				} else {
+					if (x < (xDominoToPlay -tileSize -spaceBetweenRoyaumes*2+20) && x > (xDominoToPlay -tileSize -spaceBetweenRoyaumes*2-20)&&
+							y < yDominoToPlay+30 && y > yDominoToPlay-30) {
+						switch (dir) {
+						case BAS:
+							dir= Direction.DROITE;
+							break;
+						case DROITE:
+							dir= Direction.HAUT;
+							break;
+						case HAUT:
+							dir= Direction.GAUCHE;
+							break;
+						case GAUCHE:
+							dir= Direction.BAS;
+							break;
+							
+						default:
+							break;
+						}
+					
+					} else if (x < (xDominoToPlay +tileSize +spaceBetweenRoyaumes*2+20) && x > (xDominoToPlay +tileSize +spaceBetweenRoyaumes*2-20)&&
+							y < yDominoToPlay+30 && y > yDominoToPlay-30) {
+						switch (dir) {
+						case BAS:
+							dir= Direction.GAUCHE;
+							break;
+						case DROITE:
+							dir= Direction.BAS;
+							break;
+						case HAUT:
+							dir= Direction.DROITE;
+							break;
+						case GAUCHE:
+							dir= Direction.HAUT;
+							break;
+							
+						default:
+							break;
+						
+						} 
+
+					}
+					
 				}
-			}else {
-				//TODO ajouter la possibilité de tourner le domino
+				loadBoard("");
+				StdDraw.setPenColor(Color.RED);
+				StdDraw.filledRectangle(xDominoToPlay -tileSize -spaceBetweenRoyaumes*2, yDominoToPlay, 20, 30);
+				StdDraw.filledRectangle(xDominoToPlay +tileSize +spaceBetweenRoyaumes*2, yDominoToPlay, 20, 30);
+				printCase(caseRef, xDominoToPlay, yDominoToPlay);
+				System.out.println(dir);
+				switch (dir) {
+				case DROITE:
+					printCase(caseRot, xDominoToPlay+tileSize, yDominoToPlay);
+					break;
+				case BAS:
+					printCase(caseRot, xDominoToPlay, yDominoToPlay-tileSize);
+				case GAUCHE:
+					printCase(caseRot, xDominoToPlay-tileSize, yDominoToPlay);
+				case HAUT:
+					printCase(caseRot, xDominoToPlay, yDominoToPlay+tileSize);
+				default:
+					break;
+				}
+				
+				StdDraw.show();
+				
 			}
+			
+			if (!StdDraw.isMousePressed()) {
+				isMousePressed = false;
+			}
+			
 		}
+		
 	}
 	
 	public static int choisirDomino(Joueur joueur) {
@@ -85,9 +171,9 @@ public class GUI {
 
 			for (int x = 0; x < Royaume.largeurGrille; x++) {
 				for (int y = 0; y < Royaume.hauteurGrille; y++) {
+					Case caseCourante = royaume.getCase(x, y);
 					int XBoard = XStartRoyaume + x*tileSize + tileSize/2;
 					int YBoard = YStartRoyaume + y*tileSize + tileSize/2;
-					Case caseCourante = royaume.getCase(x, y);
 					if (caseCourante.isCastle()) {
 						printChateau(joueur.getColorRoi().getAwtColor(), XBoard, YBoard);
 					} else {
@@ -97,7 +183,7 @@ public class GUI {
 			}
 
 		}
-		//Affiche la liste des dominos à jouer
+		//Affiche la liste des dominos ï¿½ jouer
 		for (int i = 0; i < Partie.dominosAjouer.size(); i++) {
 			Domino domino = Partie.dominosAjouer.get(i);
 			Case caseRef = domino.getCaseRef();
@@ -115,7 +201,7 @@ public class GUI {
 
 		}
 
-		//Affiche la liste des dominos à jouer
+		//Affiche la liste des dominos ï¿½ jouer
 		for (int i = 0; i < Partie.dominosAChoisir.size(); i++) {
 			Domino domino = Partie.dominosAChoisir.get(i);
 			Case caseRef = domino.getCaseRef();

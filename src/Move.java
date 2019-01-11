@@ -57,9 +57,9 @@ public class Move {
 		} else if (dir.equals(Direction.BAS)) {
 			Xrot = Xref;
 		} else if (dir.equals(Direction.DROITE)) {
-			Xrot = Xref - 1;
-		} else { //dir.equals(Direction.GAUCHE)
 			Xrot = Xref + 1;
+		} else { //dir.equals(Direction.GAUCHE)
+			Xrot = Xref - 1;
 		}
 		return Xrot;
 	}
